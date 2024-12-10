@@ -19,7 +19,7 @@ const login_POST = (req, res) => {
     db.query(query, [username, hashedPassword], (err, results) => {
         if (err) {
             console.error('Gagal mengambil data users:', err);
-            return res.status(500).json({ message: 'Failed to fetch users' , success : false});
+            return res.status(500).json({ message: 'Internal Server Error' , success : false});
         }
 
         if (results.length > 0) {
