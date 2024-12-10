@@ -4,7 +4,7 @@ const db = mysql.createConnection({
   host: 'localhost', // Ganti dengan host database Anda
   user: 'root',      // Ganti dengan username database Anda
   password: '',      // Ganti dengan password database Anda
-  database: 'exam_app' // Ganti dengan nama database Anda
+  database: 'super_apps_exam' // Ganti dengan nama database Anda
 });
 
 // Koneksi ke database

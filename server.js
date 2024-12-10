@@ -1,14 +1,21 @@
 const express = require('express');
+const cors = require('cors');
+const formidable = require('express-formidable'); // Middleware untuk menangani form-data
 const app = express();
-const authenticateToken = require('./middleware/auth');
-const routes = require('./routes/route');
+const routes = require('./routes/route'); // Pastikan ini sesuai dengan lokasi file route.js Anda
 const port = 3000;
 
-app.use(express.json());
+// Konfigurasi CORS
+const corsOptions = {
+    origin: '*', // Mengizinkan semua origin
+    methods: ['GET', 'POST'], // Mendukung GET dan POST
+    allowedHeaders: ['Content-Type', 'Authorization' , 'UserId'], // Header yang diizinkan
+};
 
-// Rute yang dilindungi
-app.use(authenticateToken);
-app.use(routes);
+app.use(cors(corsOptions));
+app.use(express.json()); // Middleware untuk menangani JSON
+app.use(formidable()); // Middleware untuk menangani form-data
+app.use(routes); // Menggunakan routing dari file route.js
 
 app.listen(port, () => {
     console.log(`Server berjalan di http://localhost:${port}`);
