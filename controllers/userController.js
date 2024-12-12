@@ -17,9 +17,12 @@ const getDataUser = (req, res) => {
                             CASE WHEN CURRENT_DATE <= au.expired_at AND CURRENT_DATE >= au.start_date THEN 1 ELSE 0 END AS status_aktif
                     FROM access_user as au 
                     LEFT JOIN users as u ON au.user_id = u.id
-                    WHERE u.id = ` + id; 
+                    WHERE u.id = ?` ; 
 
-    db.query(query, (err, results) => {
+    console.log(query);
+    
+
+    db.query(query , [id], (err, results) => {
         if (err) {
             return res.status(500).json({ message: 'Failed to fetch users' , success:false });
         }
@@ -50,6 +53,7 @@ const updateToken = (req, res) => {
         }
     });
 };
+
 
 
 module.exports = { getDataUser , updateToken};
