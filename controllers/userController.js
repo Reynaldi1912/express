@@ -17,10 +17,7 @@ const getDataUser = (req, res) => {
                             CASE WHEN CURRENT_DATE <= au.expired_at AND CURRENT_DATE >= au.start_date THEN 1 ELSE 0 END AS status_aktif
                     FROM access_user as au 
                     LEFT JOIN users as u ON au.user_id = u.id
-                    WHERE u.id = ?` ; 
-
-    console.log(query);
-    
+                    WHERE u.id = ?` ;     
 
     db.query(query , [id], (err, results) => {
         if (err) {

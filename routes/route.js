@@ -8,10 +8,10 @@ const authenticateToken = require('../middleware/auth');
 // Lindungi rute dengan middleware autentikasi
 router.get('/get-dashboard', authenticateToken, examController.getDashboard);
 router.get('/exams', authenticateToken, examController.getExams);
-// router.post('/updateToken' ,authenticateToken, authController.updateToken);
-router.get('/getTokenUser' ,authenticateToken, authController.getTokenUser);
-router.get('/getTokenApp' ,authenticateToken, authController.getTokenApp);
+router.get('/getTokenUser' , authController.getTokenUser);
+router.get('/getTokenApp' , authController.getTokenApp);
 router.get('/users', userController.getDataUser);
 router.post('/login', authController.login_POST);
+router.post('/updateToken' , authController.updateToken);
 
 module.exports = router;

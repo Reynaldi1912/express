@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 10, 2024 at 10:01 AM
+-- Generation Time: Dec 13, 2024 at 09:57 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.7
 
@@ -44,7 +44,7 @@ CREATE TABLE `access_user` (
 --
 
 INSERT INTO `access_user` (`id`, `token`, `start_date`, `expired_at`, `user_id`, `limit_exam`, `limit_user`, `created_at`, `updated_at`) VALUES
-(1, 'qweqwqAddeSFdesf', '2024-12-10', '2024-12-14', 1, 10, 100, '2024-12-10 07:45:20', '2024-12-10 07:45:20');
+(1, 'qweqwqAddeSFdesf', '2024-12-10', '2024-12-15', 1, 10, 100, '2024-12-10 07:45:20', '2024-12-10 07:45:20');
 
 -- --------------------------------------------------------
 
@@ -69,6 +69,22 @@ CREATE TABLE `cache_locks` (
   `owner` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `expiration` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `exams`
+--
+
+CREATE TABLE `exams` (
+  `id` int NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `start_date` datetime DEFAULT NULL,
+  `end_date` datetime DEFAULT NULL,
+  `user_id` int DEFAULT NULL,
+  `created_at` varchar(255) DEFAULT NULL,
+  `updated_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -187,6 +203,7 @@ CREATE TABLE `users` (
   `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `role` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `parent_id` bigint DEFAULT NULL,
   `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `token_app` text COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -197,8 +214,8 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `password`, `role`, `remember_token`, `token_app`, `created_at`, `updated_at`) VALUES
-(1, 'reynaldi', 'ae0b2b2d9c8c4662d42042dd3ae376b2', 'admin', NULL, 'qweqwqAddeSFdesf', NULL, NULL);
+INSERT INTO `users` (`id`, `username`, `password`, `role`, `parent_id`, `remember_token`, `token_app`, `created_at`, `updated_at`) VALUES
+(1, 'reynaldi', 'ae0b2b2d9c8c4662d42042dd3ae376b2', 'admin', NULL, NULL, 'qweqwqAddeSFdesf', NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -221,6 +238,12 @@ ALTER TABLE `cache`
 --
 ALTER TABLE `cache_locks`
   ADD PRIMARY KEY (`key`);
+
+--
+-- Indexes for table `exams`
+--
+ALTER TABLE `exams`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `failed_jobs`
@@ -277,6 +300,12 @@ ALTER TABLE `users`
 --
 ALTER TABLE `access_user`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `exams`
+--
+ALTER TABLE `exams`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`

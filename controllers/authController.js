@@ -31,7 +31,7 @@ const login_POST = (req, res) => {
 };
 
 const getTokenUser = (req, res) => {
-    const id = req.query('UserId');
+    const id = req.query.userId;
     const query = "SELECT * FROM users where id = ?"; 
 
     db.query(query , [id], (err, results) => {
@@ -64,7 +64,7 @@ const getTokenUser = (req, res) => {
 };
 
 const getTokenApp = (req, res) => {
-    const id = req.query('UserId');
+    const id = req.query.userId;
     const query = "SELECT * FROM access_user where user_id = ? AND CURRENT_DATE BETWEEN start_date AND expired_at order by id desc limit 1"; 
 
     db.query(query , [id], (err, results) => {
@@ -92,4 +92,29 @@ const getTokenApp = (req, res) => {
         }
     });
 };
-module.exports = { login_POST , getTokenApp , getTokenUser };
+const updateToken = (req, res) => {
+    const new_token = req.fields.new_token;
+    const id = req.fields.id; 
+
+    if (!id || !new_token) {
+        return res.status(400).json({ message: 'id and new_token are required' });
+    }
+
+    console.log(id);
+    console.log(new_token);
+
+    const sql = `UPDATE users SET token_app = ? WHERE id = ?`;
+
+    db.query(sql, [new_token, id], (error, results) => {
+        if (error) {
+            console.error(error);
+            return res.status(500).json({ message: 'Failed to update token', error , success:false });
+        }
+
+        return res.status(200).json({ message: 'Token updated successfully', results , success:true });
+    });
+};
+
+
+
+module.exports = { login_POST , getTokenApp , getTokenUser , updateToken };

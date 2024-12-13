@@ -10,12 +10,11 @@ function authenticateToken(req, res, next) {
         return res.status(401).json({ message: 'Token tidak disediakan!' , success: false });
     }
 
-    const query = "SELECT * FROM access_user where user_id = ? AND token = '?'"; 
 
-    console.log(query);
+    const query = "SELECT * FROM access_user where user_id = ? AND token = ? AND CURRENT_DATE BETWEEN start_date AND expired_at"; 
+
     
     db.query(query , [userId , token], (err, results) => {
-        console.log(results);
 
         if(results){
             if (results.length > 0) {
