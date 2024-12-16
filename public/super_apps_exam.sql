@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 13, 2024 at 09:57 AM
+-- Generation Time: Dec 16, 2024 at 09:49 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.7
 
@@ -44,7 +44,7 @@ CREATE TABLE `access_user` (
 --
 
 INSERT INTO `access_user` (`id`, `token`, `start_date`, `expired_at`, `user_id`, `limit_exam`, `limit_user`, `created_at`, `updated_at`) VALUES
-(1, 'qweqwqAddeSFdesf', '2024-12-10', '2024-12-15', 1, 10, 100, '2024-12-10 07:45:20', '2024-12-10 07:45:20');
+(1, 'qweqwqAddeSFdesf', '2024-12-10', '2024-12-20', 1, 10, 100, '2024-12-10 07:45:20', '2024-12-10 07:45:20');
 
 -- --------------------------------------------------------
 
@@ -82,9 +82,19 @@ CREATE TABLE `exams` (
   `start_date` datetime DEFAULT NULL,
   `end_date` datetime DEFAULT NULL,
   `user_id` int DEFAULT NULL,
+  `grouping_list_ids` text,
+  `except_user_ids` text,
   `created_at` varchar(255) DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `exams`
+--
+
+INSERT INTO `exams` (`id`, `name`, `start_date`, `end_date`, `user_id`, `grouping_list_ids`, `except_user_ids`, `created_at`, `updated_at`) VALUES
+(1, 'UJIAN NASIONAL 2024', '2024-12-16 08:00:00', '2024-12-16 12:00:00', 1, '1,2', '1', NULL, NULL),
+(2, 'UJIAN NASIONAL 2023', '2024-12-16 08:00:00', '2024-12-16 12:00:00', 1, '1,2', '1', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -101,6 +111,29 @@ CREATE TABLE `failed_jobs` (
   `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `groupings`
+--
+
+CREATE TABLE `groupings` (
+  `id` int NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `level` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `groupings`
+--
+
+INSERT INTO `groupings` (`id`, `name`, `level`, `created_at`, `updated_at`) VALUES
+(1, 'KELAS 7A', '7', '2024-12-16 03:24:27', '2024-12-16 08:37:49'),
+(2, 'KELAS 7B', '7', '2024-12-16 03:24:33', '2024-12-16 08:37:52'),
+(3, 'KELAS 7C', '7', NULL, '2024-12-16 08:37:55');
 
 -- --------------------------------------------------------
 
@@ -253,6 +286,12 @@ ALTER TABLE `failed_jobs`
   ADD UNIQUE KEY `failed_jobs_uuid_unique` (`uuid`);
 
 --
+-- Indexes for table `groupings`
+--
+ALTER TABLE `groupings`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `jobs`
 --
 ALTER TABLE `jobs`
@@ -305,13 +344,19 @@ ALTER TABLE `access_user`
 -- AUTO_INCREMENT for table `exams`
 --
 ALTER TABLE `exams`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
 --
 ALTER TABLE `failed_jobs`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `groupings`
+--
+ALTER TABLE `groupings`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `jobs`

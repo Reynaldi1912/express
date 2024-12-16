@@ -3,7 +3,7 @@ const cors = require('cors');
 const formidable = require('express-formidable'); // Middleware untuk menangani form-data
 const app = express();
 const routes = require('./routes/route'); // Pastikan ini sesuai dengan lokasi file route.js Anda
-const port = 3000;
+const port = 7000;
 
 // Konfigurasi CORS
 const corsOptions = {
