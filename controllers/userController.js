@@ -4,26 +4,24 @@ const db = require('../config/database');
 const getDataUser = (req, res) => {
     const id = req.query.id;
     const query = `SELECT 
-                        u.id as user_id,
-                        u.username,
-                        u.role,
-                        u.token_app AS token_user,
-                        --au.token AS token_sistem,
-                        au.start_date,
-                        au.expired_at,
-                        au.limit_exam,
-                        au.limit_user,
-                        CASE WHEN u.token_app = au.token THEN 1 ELSE 0 END AS token_status,
+                            u.id as user_id,
+                            u.username,
+                            u.role,
+                            COALESCE(u.token_app , (SELECT token_app FROM users WHERE id = u.parent_id)) AS token_user,
+                            au.start_date,
+                            au.expired_at,
+                            au.limit_exam,
+                            au.limit_user,
+                            CASE WHEN (SELECT token_app FROM users WHERE id = u.parent_id) = au.token THEN 1 ELSE 0 END AS token_status,
                             CASE WHEN CURRENT_DATE <= au.expired_at AND CURRENT_DATE >= au.start_date THEN 1 ELSE 0 END AS status_aktif
                     FROM access_user as au 
-                    LEFT JOIN users as u ON au.user_id = u.id
-                    WHERE u.id = ?` ;     
+                    LEFT JOIN users as u ON au.user_id = u.id OR au.user_id = u.parent_id
+                    WHERE TRUE AND CURRENT_DATE <= au.expired_at AND CURRENT_DATE >= au.start_date AND u.id = ?` ;     
 
     db.query(query , [id], (err, results) => {
         if (err) {
             return res.status(500).json({ message: 'Failed to fetch users' , success:false });
         }
-
         res.json({message:'data has been loaded',success:true , data:results});
     });
 };

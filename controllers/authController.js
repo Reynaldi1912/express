@@ -15,7 +15,14 @@ const login_POST = (req, res) => {
     
     const hashedPassword = md5Hash(password);
 
-    const query = 'SELECT * FROM users WHERE username = ? AND password = ?';
+    const query = `SELECT 
+                        u.id,
+                        u.username,
+                        u.password,
+                        u.role,
+                        COALESCE(u.token_app , parent.token_app) AS token_app
+                    FROM users AS u left join users as parent on u.parent_id = parent.id WHERE u.username = ? AND u.password = ?`;
+
     db.query(query, [username, hashedPassword], (err, results) => {
         if (err) {
             console.error('Gagal mengambil data users:', err);
@@ -32,7 +39,13 @@ const login_POST = (req, res) => {
 
 const getTokenUser = (req, res) => {
     const id = req.query.userId;
-    const query = "SELECT * FROM users where id = ?"; 
+    const query = `SELECT 
+                        u.id,
+                        u.username,
+                        u.password,
+                        u.role,
+                        COALESCE(u.token_app , parent.token_app) AS token_app
+                    FROM users AS u left join users as parent on u.parent_id = parent.id WHERE u.id = ?`; 
 
     db.query(query , [id], (err, results) => {
         if (err) {
@@ -65,7 +78,10 @@ const getTokenUser = (req, res) => {
 
 const getTokenApp = (req, res) => {
     const id = req.query.userId;
-    const query = "SELECT * FROM access_user where user_id = ? AND CURRENT_DATE BETWEEN start_date AND expired_at order by id desc limit 1"; 
+    const query = `SELECT au.* 
+                    FROM access_user AS au LEFT JOIN users AS u ON au.user_id = u.id OR au.user_id = u.parent_id
+                    where u.id = ?
+                    AND CURRENT_DATE BETWEEN start_date AND expired_at order by u.id desc limit 1`; 
 
     db.query(query , [id], (err, results) => {
         if (err) {
@@ -99,9 +115,6 @@ const updateToken = (req, res) => {
     if (!id || !new_token) {
         return res.status(400).json({ message: 'id and new_token are required' });
     }
-
-    console.log(id);
-    console.log(new_token);
 
     const sql = `UPDATE users SET token_app = ? WHERE id = ?`;
 

@@ -8,6 +8,8 @@ const authenticateToken = require('../middleware/auth');
 // Lindungi rute dengan middleware autentikasi
 router.get('/get-dashboard', authenticateToken, examController.getDashboard);
 router.get('/exams', examController.getExams);
+router.get('/groupings', examController.getGrouping);
+router.get('/users-exam', examController.getUsers);
 router.get('/getTokenUser' , authController.getTokenUser);
 router.get('/getTokenApp' , authController.getTokenApp);
 router.get('/users', userController.getDataUser);
