@@ -26,6 +26,23 @@ const getDataUser = (req, res) => {
     });
 };
 
+const getDataUserMaster = (req, res) => {
+    const id = req.query.userId;
+    const query = `SELECT 
+                        * 
+                    FROM users AS u
+                    WHERE TRUE AND u.parent_id = ?` ;     
+
+    
+    db.query(query , [id], (err, results) => {
+        if (err) {
+            return res.status(500).json({ message: 'Failed to fetch users ' + err , success:false });
+        }
+        res.json({message:'data has been loaded',success:true , data:results});
+    });
+};
+
+
 const updateToken = (req, res) => {
     const id = req.query.id;
     const token = req.query.new_token;
@@ -51,4 +68,4 @@ const updateToken = (req, res) => {
 
 
 
-module.exports = { getDataUser , updateToken};
+module.exports = { getDataUser , updateToken , getDataUserMaster};

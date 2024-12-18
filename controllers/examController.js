@@ -155,8 +155,104 @@ const getDashboard = (req, res) => {
     });
 };
 
+const getBankQuestion = (req , res) => {
+    const id = req.header('UserId');
+    const query = `SELECT 
+                        qb.*,
+                        COUNT(CASE WHEN q.type = 'multiple' THEN 1 END) AS total_multiple,
+                            COUNT(CASE WHEN q.type = 'complex' THEN 1 END) AS total_complex,
+                        COUNT(CASE WHEN q.type = 'text' THEN 1 END) AS total_text,
+                        COUNT(CASE WHEN q.type = 'match' THEN 1 END) AS total_match
+                    FROM question_banks AS qb
+                    LEFT JOIN questions AS q ON qb.id = q.question_bank_id
+                    WHERE user_id = ?
+                    GROUP BY qb.id;
+                    `; 
+
+    
+    db.query(query , [id], (err, results) => {
+        console.log(id);
+        
+        if (err) {
+            return res.status(500).json({ 
+                    message: 'Internal Server Error ' + err , 
+                    success : false}
+            );
+        }
+
+        if (results.length > 0) {
+            res.json(
+                {
+                    data : results , 
+                    success : true
+                }
+            );
+        } else {
+            res.json(
+                { 
+                    message: 'data not found' , 
+                    success : false 
+                }
+            );
+        }
+    });
+}
+
+const getDataExamUser = (req , res) => {
+    user_id = req.header('userId')
+
+    query = `SELECT 
+                e.name,
+                    DATE(e.start_date) AS date,
+                    TIME(e.start_date) AS start_time,
+                    TIME(e.end_date) AS end_time,
+                    CASE 
+                        WHEN e.start_date > CURRENT_TIMESTAMP THEN 'Waiting'
+                        WHEN e.end_date < CURRENT_TIMESTAMP THEN 'Expired'
+                        ELSE 'Kerjakan' 
+                    END AS status,
+                JSON_ARRAYAGG(g.name) AS group_ids
+            FROM 
+                exams AS e LEFT JOIN groupings AS g ON FIND_IN_SET(g.id, e.grouping_list_ids)
+                    LEFT JOIN users AS u ON g.id = u.grouping_id
+            WHERE TRUE AND e.user_id = (select parent_id from users where id = ?)
+            AND NOT FIND_IN_SET(?, e.except_user_ids)
+            AND FIND_IN_SET(u.grouping_id, e.grouping_list_ids)
+            GROUP BY 
+                e.id
+            ORDER BY 
+                ABS(DATEDIFF(e.start_date, CURDATE())) ASC
+            `
+        db.query(query , [user_id , user_id], (err, results) => {
+            console.log(user_id);
+            
+            if (err) {
+                return res.status(500).json({ 
+                        message: 'Internal Server Error ' + err , 
+                        success : false}
+                );
+            }
+    
+            if (results.length > 0) {
+                res.json(
+                    {
+                        data : results , 
+                        success : true
+                    }
+                );
+            } else {
+                res.json(
+                    { 
+                        message: 'data not found' , 
+                        success : false 
+                    }
+                );
+            }
+        });
+}
+
 const updateExams = (req , res) => {
     
 }
 
-module.exports = { getExams , getDashboard ,getGrouping , getUsers };
+module.exports = { getExams , getDashboard ,getGrouping , getUsers , getBankQuestion , getDataExamUser };
