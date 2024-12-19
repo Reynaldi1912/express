@@ -13,6 +13,9 @@ router.get('/users-exam', examController.getUsers);
 router.get('/bank-question', examController.getBankQuestion);
 router.get('/users/exams-data', examController.getDataExamUser);
 
+router.get('/question-user', examController.getQuestionUser);
+router.get('/number-of-exam', examController.numberOfPage);
+
 router.get('/getTokenUser' , authController.getTokenUser);
 router.get('/getTokenApp' , authController.getTokenApp);
 router.get('/users', userController.getDataUser);

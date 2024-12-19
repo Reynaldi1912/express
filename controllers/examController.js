@@ -198,6 +198,7 @@ const getBankQuestion = (req , res) => {
     });
 }
 
+
 const getDataExamUser = (req , res) => {
     user_id = req.header('userId')
 
@@ -251,8 +252,124 @@ const getDataExamUser = (req , res) => {
         });
 }
 
+
+const getQuestionUser = (req, res) => {
+    const questionsData = {
+        "questions": [
+          {
+            "id": 1,
+            "question": "Ibu kota Indonesia?",
+            "options": [
+              { "id": "A", "text": "Jakarta" },
+              { "id": "B", "text": "Bandung" },
+              { "id": "C", "text": "Surabaya" },
+              { "id": "D", "text": "Yogyakarta" }
+            ],
+            "answer": "A"
+          },
+          {
+            "id": 2,
+            "question": "Berapa hasil dari 2 + 3?",
+            "options": [
+              { "id": "A", "text": "4" },
+              { "id": "B", "text": "5" },
+              { "id": "C", "text": "6" },
+              { "id": "D", "text": "7" }
+            ],
+            "answer": "B"
+          },
+          {
+            "id": 3,
+            "question": "Pilih jawaban yang benar: 5 x 5 = ?",
+            "options": [
+              { "id": "A", "text": "15" },
+              { "id": "B", "text": "25" },
+              { "id": "C", "text": "30" },
+              { "id": "D", "text": "35" }
+            ],
+            "answer": "B"
+          },
+          {
+            "id": 4,
+            "question": "Cobaa sapaan indonesia",
+            "type": "essay",
+            "options": null,
+            "answer": "Halo"
+          },
+          {
+            "id": 5,
+            "question": "Cocokkan pertanyaan dengan jawaban berikut:",
+            "type": "matching",
+            "options": [
+              { "id": "1", "text": "Ibu kota Indonesia" },
+              { "id": "2", "text": "Warna langit" },
+              { "id": "3", "text": "Hewan yang menggonggong" }
+            ],
+            "answers": {
+              "1": "Jakarta",
+              "2": "Biru",
+              "3": "Anjing"
+            }
+          }
+        ]
+    };
+
+    // Jika ada parameter 'id' di URL, cari soal berdasarkan id
+    const number = req.query.number - 1;
+        
+    if (number != null) {
+        // Cari soal berdasarkan id
+        const question = questionsData.questions[number];
+        
+        if (question) {
+            res.json(question); // Kirimkan soal yang sesuai
+        } else {
+            res.status(404).json({ message: "Soal tidak ditemukan" }); // Jika soal tidak ditemukan
+        }
+    } else {
+        // Jika tidak ada id, kirimkan seluruh data soal
+        res.json(questionsData);
+    }
+};
+
+
+const numberOfPage = (req,res) => {
+    const id = req.query.id;
+    const query = `SELECT 
+                        number_of, type
+                    FROM questions AS q where question_bank_id = ?
+                    `; 
+
+    
+    db.query(query , [id], (err, results) => {
+        if (err) {
+            return res.status(500).json({ 
+                    message: 'Internal Server Error ' + err , 
+                    success : false}
+            );
+        }
+
+        if (results.length > 0) {
+            res.json(
+                {
+                    data : results , 
+                    success : true
+                }
+            );
+        } else {
+            res.json(
+                { 
+                    message: 'data not found' , 
+                    success : false 
+                }
+            );
+        }
+    });
+}
+
+
 const updateExams = (req , res) => {
     
 }
 
-module.exports = { getExams , getDashboard ,getGrouping , getUsers , getBankQuestion , getDataExamUser };
+module.exports = { getExams , getDashboard ,getGrouping , getUsers , getBankQuestion , getDataExamUser , getQuestionUser , numberOfPage };
