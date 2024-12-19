@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 18, 2024 at 09:43 AM
+-- Generation Time: Dec 19, 2024 at 10:03 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.7
 
@@ -216,6 +216,7 @@ CREATE TABLE `questions` (
   `question` text,
   `type` varchar(100) DEFAULT NULL,
   `question_bank_id` int DEFAULT NULL,
+  `number_of` int DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -224,8 +225,12 @@ CREATE TABLE `questions` (
 -- Dumping data for table `questions`
 --
 
-INSERT INTO `questions` (`id`, `question`, `type`, `question_bank_id`, `created_at`, `updated_at`) VALUES
-(1, 'Nama Saya ?', 'multiple', 1, '2024-12-18 04:27:16', '2024-12-18 04:28:31');
+INSERT INTO `questions` (`id`, `question`, `type`, `question_bank_id`, `number_of`, `created_at`, `updated_at`) VALUES
+(1, 'Nama Saya ?', 'multiple', 1, 1, '2024-12-18 04:27:16', '2024-12-19 04:17:09'),
+(2, 'Sebutkan App ?', 'complex', 1, 2, '2024-12-19 04:17:26', NULL),
+(3, 'berikan penjelasan', 'essay', 1, 3, '2024-12-19 04:17:45', NULL),
+(4, 'berikan penjelasan', 'essay', 1, 4, '2024-12-19 04:17:45', '2024-12-19 08:44:36'),
+(5, 'berikan penjelasan', 'essay', 2, 1, '2024-12-19 04:17:45', '2024-12-19 08:44:36');
 
 -- --------------------------------------------------------
 
@@ -442,7 +447,7 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT for table `questions`
 --
 ALTER TABLE `questions`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `question_banks`
