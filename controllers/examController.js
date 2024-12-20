@@ -203,7 +203,9 @@ const getDataExamUser = (req , res) => {
     user_id = req.header('userId')
 
     query = `SELECT 
-                e.name,
+                    e.id,
+                    e.name,
+                    e.end_date,
                     DATE(e.start_date) AS date,
                     TIME(e.start_date) AS start_time,
                     TIME(e.end_date) AS end_time,
