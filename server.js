@@ -17,6 +17,10 @@ app.use(express.json()); // Middleware untuk menangani JSON
 app.use(formidable()); // Middleware untuk menangani form-data
 app.use(routes); // Menggunakan routing dari file route.js
 
-app.listen(port, () => {
-    console.log(`Server berjalan di http://localhost:${port}`);
+// app.listen(port, () => {
+//     console.log(`Server berjalan di http://localhost:${port}`);
+// });
+
+app.listen(port, '0.0.0.0', () => {
+    console.log(`Server running on 0.0.0.0:${port}`);
 });
