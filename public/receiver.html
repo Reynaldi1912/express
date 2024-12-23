@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page 2 - Terima Pesan</title>
+</head>
+<body>
+    <h1>Page 2 - Terima Pesan</h1>
+    
+    <div id="messages">
+        <p><strong>Pesan yang diterima:</strong></p>
+        <ul id="messageList"></ul>
+    </div>
+
+    <script>
+        // Create a new WebSocket connection
+        const ws = new WebSocket('ws://localhost:8080');
+
+        // Log when the connection is open
+        ws.onopen = () => {
+            console.log('Connected to WebSocket server');
+        };
+
+        // Handle incoming messages from the server
+        ws.onmessage = (event) => {
+            const message = event.data;
+            console.log(`Received message: ${message}`);
+            const messageList = document.getElementById('messageList');
+            const newMessage = document.createElement('li');
+            newMessage.textContent = message;
+            messageList.appendChild(newMessage);
+        };
+
+        // Handle any errors
+        ws.onerror = (error) => {
+            console.error(`WebSocket Error: ${error}`);
+        };
+    </script>
+</body>
+</html>

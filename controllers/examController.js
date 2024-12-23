@@ -1,4 +1,5 @@
 // controllers/examController.js
+const { json } = require('express');
 const db = require('../config/database'); 
 const getExams = (req, res) => {
     const id = req.query.userId;
@@ -256,83 +257,69 @@ const getDataExamUser = (req , res) => {
 
 
 const getQuestionUser = (req, res) => {
-    const questionsData = {
-        "questions": [
-          {
-            "id": 1,
-            "question": "Ibu kota Indonesia?",
-            "options": [
-              { "id": "A", "text": "Jakarta" },
-              { "id": "B", "text": "Bandung" },
-              { "id": "C", "text": "Surabaya" },
-              { "id": "D", "text": "Yogyakarta" }
-            ],
-            "answer": "A"
-          },
-          {
-            "id": 2,
-            "question": "Berapa hasil dari 2 + 3?",
-            "options": [
-              { "id": "A", "text": "4" },
-              { "id": "B", "text": "5" },
-              { "id": "C", "text": "6" },
-              { "id": "D", "text": "7" }
-            ],
-            "answer": "B"
-          },
-          {
-            "id": 3,
-            "question": "Pilih jawaban yang benar: 5 x 5 = ?",
-            "options": [
-              { "id": "A", "text": "15" },
-              { "id": "B", "text": "25" },
-              { "id": "C", "text": "30" },
-              { "id": "D", "text": "35" }
-            ],
-            "answer": "B"
-          },
-          {
-            "id": 4,
-            "question": "Cobaa sapaan indonesia",
-            "type": "essay",
-            "options": null,
-            "answer": "Halo"
-          },
-          {
-            "id": 5,
-            "question": "Cocokkan pertanyaan dengan jawaban berikut:",
-            "type": "matching",
-            "options": [
-              { "id": "1", "text": "Ibu kota Indonesia" },
-              { "id": "2", "text": "Warna langit" },
-              { "id": "3", "text": "Hewan yang menggonggong" }
-            ],
-            "answers": {
-              "1": "Jakarta",
-              "2": "Biru",
-              "3": "Anjing"
-            }
-          }
-        ]
-    };
+    const queryQuestion = `SELECT * FROM questions WHERE question_bank_id = 1 AND number_of = ?`;
 
-    // Jika ada parameter 'id' di URL, cari soal berdasarkan id
-    const number = req.query.number - 1;
-        
-    if (number != null) {
-        // Cari soal berdasarkan id
-        const question = questionsData.questions[number];
-        
-        if (question) {
-            res.json(question); // Kirimkan soal yang sesuai
+    // Query untuk mendapatkan soal berdasarkan `number_of`
+    db.query(queryQuestion, [req.query.number], (err, questionResults) => {
+        if (err) {
+            return res.status(500).json({
+                message: 'Internal Server Error: ' + err,
+                success: false
+            });
+        }
+
+        if (questionResults.length > 0) {
+            const id = questionResults[0].id; // ID dari soal
+            const question = questionResults[0].question; // Teks soal
+            const queryOption = `SELECT id, text FROM options WHERE question_id = ?`;
+            const queryOptionUser = `SELECT option_id , text FROM options_user WHERE question_id = ? AND user_id = ?`;
+
+            db.query(queryOption, [id], (err, optionResults) => {
+                if (err) {
+                    return res.status(500).json({
+                        message: 'Internal Server Error (Options): ' + err,
+                        success: false
+                    });
+                }
+
+                const options = optionResults.map((option) => ({
+                    id: option.id,
+                    text: option.text
+                }));
+                
+                db.query(queryOptionUser, [id, req.query.user_id], (err, userAnswerResults) => {
+                    
+                    if (err) {
+                        return res.status(500).json({
+                            message: 'Internal Server Error (User Answer): ' + err,
+                            success: false
+                        });
+                    }
+
+                    const answer = userAnswerResults.length > 0 
+                    ? (userAnswerResults[0].text !== null 
+                        ? userAnswerResults[0].text 
+                        : (userAnswerResults[0].option_id !== null 
+                            ? userAnswerResults 
+                            : null))
+                    : null;
+                
+
+                    res.json({
+                        id: id,
+                        question: question,
+                        options: options,
+                        answer: answer
+                    });
+                });
+            });
         } else {
             res.status(404).json({ message: "Soal tidak ditemukan" }); // Jika soal tidak ditemukan
         }
-    } else {
-        // Jika tidak ada id, kirimkan seluruh data soal
-        res.json(questionsData);
-    }
+    });
 };
+
+
 
 
 const numberOfPage = (req,res) => {

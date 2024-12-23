@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page 1 - Kirim Pesan</title>
+</head>
+<body>
+    <h1>Page 1 - Kirim Pesan</h1>
+    
+    <input type="text" id="messageInput" placeholder="Ketik pesan...">
+    <button id="sendMessageButton">Kirim Pesan</button>
+    
+    <script>
+        // Create a new WebSocket connection
+        const ws = new WebSocket('ws://localhost:8080');
+
+        // Log when the connection is open
+        ws.onopen = () => {
+            console.log('Connected to WebSocket server');
+        };
+
+        // Handle any errors
+        ws.onerror = (error) => {
+            console.error(`WebSocket Error: ${error}`);
+        };
+
+        // Send the message to the server when the button is clicked
+        document.getElementById('sendMessageButton').addEventListener('click', () => {
+            const message = document.getElementById('messageInput').value;
+            if (message) {
+                console.log(`Sending message: ${message}`);
+                ws.send(message);
+            }
+        });
+    </script>
+</body>
+</html>

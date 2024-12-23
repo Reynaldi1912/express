@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 19, 2024 at 10:03 AM
+-- Generation Time: Dec 23, 2024 at 09:56 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.7
 
@@ -94,7 +94,7 @@ CREATE TABLE `exams` (
 --
 
 INSERT INTO `exams` (`id`, `name`, `start_date`, `end_date`, `user_id`, `grouping_list_ids`, `except_user_ids`, `created_at`, `updated_at`) VALUES
-(1, 'UJIAN NASIONAL 2024', '2024-12-18 15:00:00', '2024-12-18 17:00:00', 1, '1,2', '2', NULL, NULL),
+(1, 'UJIAN NASIONAL 2024', '2024-12-18 21:00:00', '2024-12-24 17:00:00', 1, '1,2', '2', NULL, NULL),
 (2, 'TRY OUT 2023', '2024-12-16 08:00:00', '2024-12-16 12:00:00', 1, '1', '2,3', NULL, NULL);
 
 -- --------------------------------------------------------
@@ -192,6 +192,60 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (1, '0001_01_01_000000_create_users_table', 1),
 (2, '0001_01_01_000001_create_cache_table', 1),
 (3, '0001_01_01_000002_create_jobs_table', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `options`
+--
+
+CREATE TABLE `options` (
+  `id` int NOT NULL,
+  `text` text,
+  `parent_match` text,
+  `is_true` int DEFAULT NULL,
+  `question_id` int DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `options`
+--
+
+INSERT INTO `options` (`id`, `text`, `parent_match`, `is_true`, `question_id`, `created_at`, `updated_at`) VALUES
+(1, 'Reynaldi', NULL, 1, 1, '2024-12-23 07:56:00', '2024-12-23 07:56:20'),
+(2, 'Akbar', NULL, 0, 1, '2024-12-23 07:56:08', '2024-12-23 07:56:20'),
+(3, 'Yasril', NULL, 0, 1, '2024-12-23 07:56:12', '2024-12-23 07:56:20'),
+(4, 'Facebook', NULL, 1, 2, '2024-12-23 07:56:37', NULL),
+(5, 'Whatsapp', NULL, 1, 2, '2024-12-23 07:56:45', NULL),
+(6, 'Kuda', NULL, 0, 2, '2024-12-23 07:56:48', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `options_user`
+--
+
+CREATE TABLE `options_user` (
+  `id` int NOT NULL,
+  `question_id` int DEFAULT NULL,
+  `user_id` int DEFAULT NULL,
+  `option_id` int DEFAULT NULL,
+  `text` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `options_user`
+--
+
+INSERT INTO `options_user` (`id`, `question_id`, `user_id`, `option_id`, `text`, `created_at`, `updated_at`) VALUES
+(1, 1, 3, 1, NULL, '2024-12-23 08:16:16', '2024-12-23 08:19:14'),
+(2, 2, 3, 4, NULL, '2024-12-23 08:16:34', '2024-12-23 08:19:15'),
+(3, 2, 3, 5, NULL, '2024-12-23 08:16:34', '2024-12-23 08:19:15'),
+(4, 3, 3, NULL, 'Hallo', '2024-12-23 08:42:18', NULL);
 
 -- --------------------------------------------------------
 
@@ -372,6 +426,18 @@ ALTER TABLE `migrations`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `options`
+--
+ALTER TABLE `options`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `options_user`
+--
+ALTER TABLE `options_user`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `password_reset_tokens`
 --
 ALTER TABLE `password_reset_tokens`
@@ -442,6 +508,18 @@ ALTER TABLE `jobs`
 --
 ALTER TABLE `migrations`
   MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `options`
+--
+ALTER TABLE `options`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `options_user`
+--
+ALTER TABLE `options_user`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `questions`
