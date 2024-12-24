@@ -25,14 +25,21 @@
             console.error(`WebSocket Error: ${error}`);
         };
 
-        // Send the message to the server when the button is clicked
         document.getElementById('sendMessageButton').addEventListener('click', () => {
             const message = document.getElementById('messageInput').value;
+            const time = new Date().toLocaleTimeString(); // Mendapatkan waktu saat ini
             if (message) {
-                console.log(`Sending message: ${message}`);
-                ws.send(message);
+                const payload = {
+                    message: message,
+                    time: time
+                };
+
+                console.log(`Sending message: ${JSON.stringify(payload)}`);
+                ws.send(JSON.stringify(payload)); // Mengirim sebagai string JSON
             }
         });
+
+
     </script>
 </body>
 </html>

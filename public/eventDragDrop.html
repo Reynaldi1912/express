@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag and Drop dengan Modal di Mobile</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            display: flex;
+            gap: 50px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .column {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .pair {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .text {
+            width: 100px;
+            margin-right: 10px;
+        }
+        .dropzone {
+            width: 150px;
+            height: 40px;
+            border: 2px dashed #ccc;
+            background-color: #f0f8ff;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: pointer;
+        }
+        .dropzone.filled {
+            background-color: #d0f0d0;
+            border: 2px solid #5cb85c;
+        }
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .option {
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: grab;
+            text-align: center;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 300px;
+            text-align: center;
+        }
+        .modal-button {
+            padding: 10px;
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .modal-button:hover {
+            background-color: #4cae4c;
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .options {
+                display: none; /* Hide options for mobile */
+            }
+            .dropzone {
+                min-height: 40px;
+            }
+        }
+
+        /* Desktop Styles */
+        @media (min-width: 769px) {
+            .dropzone {
+                cursor: pointer;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Drag and Drop dengan Modal di Mobile</h1>
+
+    <div class="container">
+        <div class="column">
+            <div class="pair">
+                <div class="text">Apel</div>
+                <div class="dropzone" data-id="apple" id="dropzone-apple"></div>
+            </div>
+            <div class="pair">
+                <div class="text">Jeruk</div>
+                <div class="dropzone" data-id="orange" id="dropzone-orange"></div>
+            </div>
+            <div class="pair">
+                <div class="text">Anggur</div>
+                <div class="dropzone" data-id="grape" id="dropzone-grape"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for selecting options (Mobile) -->
+    <div class="modal" id="selectModal">
+        <div class="modal-content">
+            <h3>Pilih Salah Satu</h3>
+            <div class="options" id="modalOptions">
+                <!-- Options will be injected dynamically into the modal -->
+            </div>
+            <button class="modal-button" id="closeModal">Tutup</button>
+        </div>
+    </div>
+
+    <!-- Options for Drag and Drop (Desktop) -->
+    <div class="options" id="dragOptions">
+        <div class="option" data-id="apple">Apple</div>
+        <div class="option" data-id="orange">Orange</div>
+        <div class="option" data-id="grape">Grape</div>
+    </div>
+
+    <script>
+        const dropzones = document.querySelectorAll('.dropzone');
+        const modal = document.getElementById('selectModal');
+        const closeModal = document.getElementById('closeModal');
+        const modalOptions = document.getElementById('modalOptions');
+        const dragOptions = document.getElementById('dragOptions');
+        let selectedDropzone = null;
+
+        // List of available options
+        const optionsList = [
+            { id: 'apple', label: 'Apple' },
+            { id: 'orange', label: 'Orange' },
+            { id: 'grape', label: 'Grape' }
+        ];
+
+        // Populate modal with options
+        function populateModalOptions() {
+            if (!modalOptions) return;  // Ensure modalOptions is defined
+            modalOptions.innerHTML = '';  // Clear any existing options
+
+            optionsList.forEach(option => {
+                const optionElement = document.createElement('div');
+                optionElement.classList.add('option');
+                optionElement.dataset.id = option.id;
+                optionElement.textContent = option.label;
+                modalOptions.appendChild(optionElement);
+            });
+        }
+
+        // Handle mobile modal: open modal when dropzone clicked
+        dropzones.forEach(dropzone => {
+            dropzone.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {  // Mobile
+                    selectedDropzone = dropzone;  // Store the selected dropzone
+                    populateModalOptions();  // Populate modal options
+                    modal.style.display = 'flex';  // Show modal
+                }
+            });
+        });
+
+        // Handle option click in modal (mobile only)
+        modalOptions.addEventListener('click', (e) => {
+            if (e.target && e.target.classList.contains('option')) {
+                const selectedOption = e.target;
+                if (selectedDropzone) {
+                    selectedDropzone.textContent = selectedOption.textContent;
+                    selectedDropzone.classList.add('filled');
+                    modal.style.display = 'none';  // Close modal
+                }
+            }
+        });
+
+        // Close modal button (mobile only)
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        // Close modal if clicked outside modal content (mobile only)
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Handle drag and drop (desktop only)
+        dragOptions.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text', e.target.dataset.id);
+        });
+
+        dropzones.forEach(dropzone => {
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+            });
+
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const draggedOptionId = e.dataTransfer.getData('text');
+                const draggedOption = document.querySelector(`[data-id="${draggedOptionId}"]`);
+
+                if (draggedOption) {
+                    dropzone.textContent = draggedOption.textContent;
+                    dropzone.classList.add('filled');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

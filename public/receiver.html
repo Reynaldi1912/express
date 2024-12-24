@@ -22,15 +22,29 @@
             console.log('Connected to WebSocket server');
         };
 
-        // Handle incoming messages from the server
-        ws.onmessage = (event) => {
-            const message = event.data;
-            console.log(`Received message: ${message}`);
-            const messageList = document.getElementById('messageList');
-            const newMessage = document.createElement('li');
-            newMessage.textContent = message;
-            messageList.appendChild(newMessage);
+        ws.onmessage = async (event) => {
+            const data = event.data;
+
+            if (data instanceof Blob) {
+                // Jika data adalah Blob, ubah menjadi teks
+                const text = await data.text();
+                console.log(text);
+
+                const messageList = document.getElementById('messageList');
+                const newMessage = document.createElement('li');
+                newMessage.textContent = text;
+                messageList.appendChild(newMessage);
+            } else {
+                // Jika data bukan Blob, langsung tampilkan
+                console.log(data);
+
+                const messageList = document.getElementById('messageList');
+                const newMessage = document.createElement('li');
+                newMessage.textContent = data;
+                messageList.appendChild(newMessage);
+            }
         };
+
 
         // Handle any errors
         ws.onerror = (error) => {

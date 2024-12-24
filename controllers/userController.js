@@ -7,6 +7,7 @@ const getDataUser = (req, res) => {
                             u.id as user_id,
                             u.username,
                             u.role,
+                            u.parent_id,
                             COALESCE(u.token_app , (SELECT token_app FROM users WHERE id = u.parent_id)) AS token_user,
                             au.start_date,
                             au.expired_at,

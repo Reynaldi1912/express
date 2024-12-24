@@ -1,49 +1,60 @@
-// Import required modules
 const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 
-// Create an Express app
 const app = express();
-
-// Create an HTTP server using the Express app
 const server = http.createServer(app);
-
-// Create a WebSocket server attached to the HTTP server
 const wss = new WebSocket.Server({ server });
 
-// Store WebSocket connections
 let connections = [];
 
-// Handle WebSocket connection
 wss.on('connection', (ws) => {
     console.log('A client has connected');
-    
-    // Add new WebSocket connection to the connections array
-    connections.push(ws);
-    
-    // Handle messages from the client
+
     ws.on('message', (message) => {
-        console.log(`Received message: ${message}`);
+        const data = JSON.parse(message); // Asumsikan pesan dalam format JSON
+
+        console.log('message');
         
-        connections.forEach(client => {
-            if (client !== ws) {
-                client.send(message);
-            }
-        });
+        // Jika data memiliki user_id, simpan di koneksi
+        if (data.type === 'register') {
+            ws.user_id = data.user_id; // Simpan user_id
+            console.log(`Registered user_id: ${ws.user_id}`);
+        }
+
+        // Kirim pesan ke user tertentu jika ada target_user_id
+        if (data.type === 'message' && data.target_user_id) {
+            emitToUser(data.target_user_id, data.message);
+        } else {
+            // Kirim pesan ke semua klien kecuali pengirim
+            connections.forEach(client => {
+                if (client !== ws && client.readyState === WebSocket.OPEN) {
+                    client.send(message);
+                }
+            });
+        }
     });
 
-    // Handle WebSocket connection closure
     ws.on('close', () => {
-        console.log('A client has disconnected');
+        console.log(`Client with user_id ${ws.user_id} disconnected`);
         connections = connections.filter(client => client !== ws);
     });
+
+    connections.push(ws);
 });
 
-// Serve static files (for pages)
+function emitToUser(userId, message) {
+    const targetClient = connections.find(client => client.user_id === userId);
+    if (targetClient && targetClient.readyState === WebSocket.OPEN) {
+        targetClient.send(JSON.stringify({ message: message }));
+        console.log(`Message sent to user_id ${userId}: ${message}`);
+    } else {
+        console.log(`User with user_id ${userId} not found or not connected`);
+    }
+}
+
 app.use(express.static('public'));
 
-// Start the server
-server.listen(8080, () => {
-    console.log('Server is running at http://localhost:8080');
+server.listen(8080, '0.0.0.0', () => {
+    console.log(`Server running on 0.0.0.0:8080`);
 });
