@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 23, 2024 at 09:56 AM
+-- Generation Time: Dec 30, 2024 at 10:05 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.7
 
@@ -45,7 +45,8 @@ CREATE TABLE `access_user` (
 
 INSERT INTO `access_user` (`id`, `token`, `start_date`, `expired_at`, `user_id`, `limit_exam`, `limit_user`, `created_at`, `updated_at`) VALUES
 (1, 'qweqwqAddeSFdesf', '2024-12-10', '2024-12-16', 1, 10, 100, '2024-12-10 07:45:20', '2024-12-10 07:45:20'),
-(2, 'fdsfhsudhfdskfniu', '2024-12-16', '2024-12-30', 1, 10, 100, '2024-12-17 02:36:28', '2024-12-17 02:36:26');
+(2, 'fdsfhsudhfdskfniu', '2024-12-16', '2024-12-30', 1, 10, 100, '2024-12-17 02:36:28', '2024-12-17 02:36:26'),
+(3, 'fdsfhsudhfdskfniu', '2024-12-24', '2024-12-30', 4, 10, 100, '2024-12-24 09:01:54', '2024-12-24 09:01:51');
 
 -- --------------------------------------------------------
 
@@ -94,7 +95,7 @@ CREATE TABLE `exams` (
 --
 
 INSERT INTO `exams` (`id`, `name`, `start_date`, `end_date`, `user_id`, `grouping_list_ids`, `except_user_ids`, `created_at`, `updated_at`) VALUES
-(1, 'UJIAN NASIONAL 2024', '2024-12-18 21:00:00', '2024-12-24 17:00:00', 1, '1,2', '2', NULL, NULL),
+(1, 'UJIAN NASIONAL 2024', '2024-12-18 21:00:00', '2024-12-31 17:00:00', 1, '1,2', '2', NULL, NULL),
 (2, 'TRY OUT 2023', '2024-12-16 08:00:00', '2024-12-16 12:00:00', 1, '1', '2,3', NULL, NULL);
 
 -- --------------------------------------------------------
@@ -135,7 +136,8 @@ CREATE TABLE `groupings` (
 INSERT INTO `groupings` (`id`, `name`, `level`, `user_id`, `created_at`, `updated_at`) VALUES
 (1, 'KELAS 7A', '7', 1, '2024-12-16 03:24:27', '2024-12-17 07:47:43'),
 (2, 'KELAS 7B', '7', 1, '2024-12-16 03:24:33', '2024-12-17 07:47:39'),
-(3, 'KELAS 7C', '7', 1, NULL, '2024-12-17 07:47:38');
+(3, 'KELAS 7C', '7', 1, NULL, '2024-12-17 07:47:38'),
+(4, 'KELAS 7D', '7', 1, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -363,7 +365,8 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `username`, `password`, `role`, `parent_id`, `remember_token`, `token_app`, `grouping_id`, `is_active`, `created_at`, `updated_at`) VALUES
 (1, 'reynaldi', 'ae0b2b2d9c8c4662d42042dd3ae376b2', 'admin', NULL, NULL, 'fdsfhsudhfdskfniu', NULL, 1, NULL, NULL),
 (2, 'akbar', 'ae0b2b2d9c8c4662d42042dd3ae376b2', 'user', 1, NULL, NULL, 2, 1, NULL, NULL),
-(3, 'yasril', 'ae0b2b2d9c8c4662d42042dd3ae376b2', 'user', 1, NULL, NULL, 2, 1, NULL, NULL);
+(3, 'yasril', 'ae0b2b2d9c8c4662d42042dd3ae376b2', 'user', 1, NULL, NULL, 2, 1, NULL, NULL),
+(4, 'admin', 'ae0b2b2d9c8c4662d42042dd3ae376b2', 'admin', NULL, NULL, 'fdsfhsudhfdskfniu', 2, 1, NULL, NULL);
 
 --
 -- Indexes for dumped tables
@@ -477,7 +480,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `access_user`
 --
 ALTER TABLE `access_user`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `exams`
@@ -495,7 +498,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `groupings`
 --
 ALTER TABLE `groupings`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `jobs`
@@ -537,7 +540,7 @@ ALTER TABLE `question_banks`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
