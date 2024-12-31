@@ -272,8 +272,9 @@ const getQuestionUser = (req, res) => {
             const id = questionResults[0].id; // ID dari soal
             const question = questionResults[0].question; // Teks soal
             const queryOption = `SELECT id, text FROM options WHERE question_id = ?`;
-            const queryOptionUser = `SELECT option_id , text FROM options_user WHERE question_id = ? AND user_id = ?`;
+            const queryOptionUser = `SELECT option_id, text FROM options_user WHERE question_id = ? AND user_id = ?`;
 
+            // Mendapatkan opsi untuk soal
             db.query(queryOption, [id], (err, optionResults) => {
                 if (err) {
                     return res.status(500).json({
@@ -286,9 +287,9 @@ const getQuestionUser = (req, res) => {
                     id: option.id,
                     text: option.text
                 }));
-                
+
+                // Mendapatkan jawaban pengguna
                 db.query(queryOptionUser, [id, req.query.user_id], (err, userAnswerResults) => {
-                    
                     if (err) {
                         return res.status(500).json({
                             message: 'Internal Server Error (User Answer): ' + err,
@@ -296,14 +297,17 @@ const getQuestionUser = (req, res) => {
                         });
                     }
 
-                    const answer = userAnswerResults.length > 0 
-                    ? (userAnswerResults[0].text !== null 
-                        ? userAnswerResults[0].text 
-                        : (userAnswerResults[0].option_id !== null 
-                            ? userAnswerResults 
-                            : null))
-                    : null;
-                
+                    
+                    let answer = null;
+                    console.log(userAnswerResults);
+                    
+                    if (userAnswerResults[0].option_id != '' && userAnswerResults[0].option_id != null) {      
+                        answer = userAnswerResults[0].option_id
+                        .split(',')
+                        .map((id) => ({ option_id: Number(id) }));
+                    }else if(userAnswerResults[0].text != '' && userAnswerResults[0].text != null){
+                        answer =  userAnswerResults[0].text;
+                    }
 
                     res.json({
                         id: id,
@@ -318,6 +322,7 @@ const getQuestionUser = (req, res) => {
         }
     });
 };
+
 
 
 
@@ -359,6 +364,10 @@ const numberOfPage = (req,res) => {
 
 const updateExams = (req , res) => {
     
+}
+const answerQuestion = (req , res) => {
+    question_id = req.query.question_id;
+    text_answer = req.query.question_id;
 }
 
 module.exports = { getExams , getDashboard ,getGrouping , getUsers , getBankQuestion , getDataExamUser , getQuestionUser , numberOfPage };

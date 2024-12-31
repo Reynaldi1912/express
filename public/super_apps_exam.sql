@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 30, 2024 at 10:05 AM
+-- Generation Time: Dec 31, 2024 at 09:48 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.3.7
 
@@ -45,8 +45,8 @@ CREATE TABLE `access_user` (
 
 INSERT INTO `access_user` (`id`, `token`, `start_date`, `expired_at`, `user_id`, `limit_exam`, `limit_user`, `created_at`, `updated_at`) VALUES
 (1, 'qweqwqAddeSFdesf', '2024-12-10', '2024-12-16', 1, 10, 100, '2024-12-10 07:45:20', '2024-12-10 07:45:20'),
-(2, 'fdsfhsudhfdskfniu', '2024-12-16', '2024-12-30', 1, 10, 100, '2024-12-17 02:36:28', '2024-12-17 02:36:26'),
-(3, 'fdsfhsudhfdskfniu', '2024-12-24', '2024-12-30', 4, 10, 100, '2024-12-24 09:01:54', '2024-12-24 09:01:51');
+(2, 'fdsfhsudhfdskfniu', '2024-12-16', '2024-12-31', 1, 10, 100, '2024-12-17 02:36:28', '2024-12-17 02:36:26'),
+(3, 'fdsfhsudhfdskfniu', '2024-12-24', '2024-12-31', 4, 10, 100, '2024-12-24 09:01:54', '2024-12-24 09:01:51');
 
 -- --------------------------------------------------------
 
@@ -233,7 +233,7 @@ CREATE TABLE `options_user` (
   `id` int NOT NULL,
   `question_id` int DEFAULT NULL,
   `user_id` int DEFAULT NULL,
-  `option_id` int DEFAULT NULL,
+  `option_id` text,
   `text` text,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
@@ -244,10 +244,9 @@ CREATE TABLE `options_user` (
 --
 
 INSERT INTO `options_user` (`id`, `question_id`, `user_id`, `option_id`, `text`, `created_at`, `updated_at`) VALUES
-(1, 1, 3, 1, NULL, '2024-12-23 08:16:16', '2024-12-23 08:19:14'),
-(2, 2, 3, 4, NULL, '2024-12-23 08:16:34', '2024-12-23 08:19:15'),
-(3, 2, 3, 5, NULL, '2024-12-23 08:16:34', '2024-12-23 08:19:15'),
-(4, 3, 3, NULL, 'Hallo', '2024-12-23 08:42:18', NULL);
+(1, 1, 3, '1', NULL, '2024-12-23 08:16:16', '2024-12-31 08:46:51'),
+(4, 3, 3, NULL, 'Hallo', '2024-12-23 08:42:18', NULL),
+(5, 2, 3, '4,5', NULL, '2024-12-31 08:46:56', NULL);
 
 -- --------------------------------------------------------
 
@@ -522,7 +521,7 @@ ALTER TABLE `options`
 -- AUTO_INCREMENT for table `options_user`
 --
 ALTER TABLE `options_user`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `questions`
