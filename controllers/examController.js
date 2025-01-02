@@ -365,9 +365,32 @@ const numberOfPage = (req,res) => {
 const updateExams = (req , res) => {
     
 }
-const answerQuestion = (req , res) => {
-    question_id = req.query.question_id;
-    text_answer = req.query.question_id;
-}
+const answerQuestion = async (req, res) => {    
+    const { question_id, answer: option_answer, user_id } = req.fields;
+    
+    // Validasi input
+    if (!question_id || !option_answer || !user_id) {
+        return res.status(400).json({ message: "question_id, answer, and user_id are required." });
+    }
 
-module.exports = { getExams , getDashboard ,getGrouping , getUsers , getBankQuestion , getDataExamUser , getQuestionUser , numberOfPage };
+    try {
+        // Hapus entri lama dari tabel options_user
+        await db.query(
+            "DELETE FROM options_user WHERE user_id = ? AND question_id = ?",
+            [user_id, question_id]
+        );
+
+        // Masukkan data baru ke tabel options_user
+        await db.query(
+            "INSERT INTO options_user (question_id, option_id, user_id) VALUES (?, ?, ?)",
+            [question_id, option_answer, user_id]
+        );
+
+        res.status(200).json({ message: "Answer updated successfully." });
+    } catch (error) {
+        console.error("Error updating answer:", error);
+        res.status(500).json({ message: "Internal server error." });
+    }
+};
+
+module.exports = { getExams , getDashboard ,getGrouping , getUsers , getBankQuestion , getDataExamUser , getQuestionUser , numberOfPage , answerQuestion };
