@@ -267,7 +267,7 @@ const getQuestionUser = (req, res) => {
                 success: false
             });
         }
-
+        
         if (questionResults.length > 0) {
             const id = questionResults[0].id; // ID dari soal
             const question = questionResults[0].question; // Teks soal
@@ -287,9 +287,13 @@ const getQuestionUser = (req, res) => {
                     id: option.id,
                     text: option.text
                 }));
+                
 
+                
                 // Mendapatkan jawaban pengguna
                 db.query(queryOptionUser, [id, req.query.user_id], (err, userAnswerResults) => {
+                    console.log(userAnswerResults);
+                    
                     if (err) {
                         return res.status(500).json({
                             message: 'Internal Server Error (User Answer): ' + err,
@@ -298,17 +302,18 @@ const getQuestionUser = (req, res) => {
                     }
 
                     
-                    let answer = null;
-                    console.log(userAnswerResults);
-                    
-                    if (userAnswerResults[0].option_id != '' && userAnswerResults[0].option_id != null) {      
-                        answer = userAnswerResults[0].option_id
-                        .split(',')
-                        .map((id) => ({ option_id: Number(id) }));
-                    }else if(userAnswerResults[0].text != '' && userAnswerResults[0].text != null){
-                        answer =  userAnswerResults[0].text;
+                    let answer = null;                    
+                    if(userAnswerResults.length > 0){
+                        if (userAnswerResults[0].option_id != '' && userAnswerResults[0].option_id != null) {      
+                            answer = userAnswerResults[0].option_id
+                            .split(',')
+                            .map((id) => ({ option_id: Number(id) }));
+                        }else if(userAnswerResults[0].text != '' && userAnswerResults[0].text != null){
+                            answer =  userAnswerResults[0].text;
+                        }
                     }
 
+                    
                     res.json({
                         id: id,
                         question: question,
@@ -373,8 +378,7 @@ const answerQuestion = async (req, res) => {
         return res.status(400).json({ message: "question_id, answer, and user_id are required." });
     }
 
-    try {
-        // Hapus entri lama dari tabel options_user
+    try {          
         await db.query(
             "DELETE FROM options_user WHERE user_id = ? AND question_id = ?",
             [user_id, question_id]
@@ -385,8 +389,8 @@ const answerQuestion = async (req, res) => {
             "INSERT INTO options_user (question_id, option_id, user_id) VALUES (?, ?, ?)",
             [question_id, option_answer, user_id]
         );
-
         res.status(200).json({ message: "Answer updated successfully." });
+
     } catch (error) {
         console.error("Error updating answer:", error);
         res.status(500).json({ message: "Internal server error." });
