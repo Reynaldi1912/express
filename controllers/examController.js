@@ -1,6 +1,8 @@
 // controllers/examController.js
 const { json } = require('express');
 const db = require('../config/database'); 
+const { queryAsync } = require('../utility/database');  // Mengimpor fungsi queryAsync
+
 const getExams = (req, res) => {
     const id = req.query.userId;
 
@@ -256,76 +258,84 @@ const getDataExamUser = (req , res) => {
 }
 
 
-const getQuestionUser = (req, res) => {
+async function getQuestionUser(req, res) {
     const queryQuestion = `SELECT * FROM questions WHERE question_bank_id = 1 AND number_of = ?`;
-
+   
     // Query untuk mendapatkan soal berdasarkan `number_of`
-    db.query(queryQuestion, [req.query.number], (err, questionResults) => {
-        if (err) {
-            return res.status(500).json({
-                message: 'Internal Server Error: ' + err,
-                success: false
-            });
-        }
-        
-        if (questionResults.length > 0) {
-            const id = questionResults[0].id; // ID dari soal
-            const question = questionResults[0].question; // Teks soal
-            const queryOption = `SELECT id, text FROM options WHERE question_id = ?`;
-            const queryOptionUser = `SELECT option_id, text FROM options_user WHERE question_id = ? AND user_id = ?`;
+    
+    const questionResults = await queryAsync(queryQuestion, [req.query.number]);
+    
+    if (questionResults.length > 0) {
+        const id = questionResults[0].id; // ID dari soal
+        const question = questionResults[0].question; // Teks soal
+        const type = await queryAsync('SELECT type FROM questions WHERE id = ?', [id]);
 
-            // Mendapatkan opsi untuk soal
-            db.query(queryOption, [id], (err, optionResults) => {
+        const queryOption = `SELECT id, text FROM options WHERE question_id = ?`;
+        const queryOptionUser = `SELECT option_id, text FROM options_user WHERE question_id = ? AND user_id = ?`;
+
+        let match_question = null;
+        let option_second = null;
+        
+        if(type[0].type == 'match'){
+            const queryMatchQuestion = `SELECT id, text FROM options WHERE question_id = ? `
+            const queryOptionSecond = `SELECT id, match_text FROM options WHERE question_id = ? `;
+            match_question = await queryAsync(queryMatchQuestion, [id ]);
+            option_second = await queryAsync(queryOptionSecond, [id]);
+        }
+
+
+        db.query(queryOption, [id], (err, optionResults) => {
+            if (err) {
+                return res.status(500).json({
+                    message: 'Internal Server Error (Options): ' + err,
+                    success: false
+                });
+            }
+
+            const options = optionResults.map((option) => ({
+                id: option.id,
+                text: option.text
+            }));
+            
+
+            
+            // Mendapatkan jawaban pengguna
+            db.query(queryOptionUser, [id, req.query.user_id], (err, userAnswerResults) => {
+                console.log(userAnswerResults);
+                
                 if (err) {
                     return res.status(500).json({
-                        message: 'Internal Server Error (Options): ' + err,
+                        message: 'Internal Server Error (User Answer): ' + err,
                         success: false
                     });
                 }
 
-                const options = optionResults.map((option) => ({
-                    id: option.id,
-                    text: option.text
-                }));
                 
+                let answer = null;
+                if(userAnswerResults.length > 0){
+                    if (userAnswerResults[0].option_id != '' && userAnswerResults[0].option_id != null) {      
+                        answer = userAnswerResults[0].option_id
+                        .split(',')
+                        .map((id) => ({ option_id: Number(id) }));
+                    }else if(userAnswerResults[0].text != '' && userAnswerResults[0].text != null){
+                        answer =  userAnswerResults[0].text;
+                    }
+                }
 
                 
-                // Mendapatkan jawaban pengguna
-                db.query(queryOptionUser, [id, req.query.user_id], (err, userAnswerResults) => {
-                    console.log(userAnswerResults);
-                    
-                    if (err) {
-                        return res.status(500).json({
-                            message: 'Internal Server Error (User Answer): ' + err,
-                            success: false
-                        });
-                    }
-
-                    
-                    let answer = null;                    
-                    if(userAnswerResults.length > 0){
-                        if (userAnswerResults[0].option_id != '' && userAnswerResults[0].option_id != null) {      
-                            answer = userAnswerResults[0].option_id
-                            .split(',')
-                            .map((id) => ({ option_id: Number(id) }));
-                        }else if(userAnswerResults[0].text != '' && userAnswerResults[0].text != null){
-                            answer =  userAnswerResults[0].text;
-                        }
-                    }
-
-                    
-                    res.json({
-                        id: id,
-                        question: question,
-                        options: options,
-                        answer: answer
-                    });
+                res.json({
+                    id: id,
+                    question: question,
+                    options: options,
+                    answer: answer,
+                    match_question: match_question,
+                    option_second : option_second
                 });
             });
-        } else {
-            res.status(404).json({ message: "Soal tidak ditemukan" }); // Jika soal tidak ditemukan
-        }
-    });
+        });
+    } else {
+        res.status(404).json({ message: "Soal tidak ditemukan" }); // Jika soal tidak ditemukan
+    }
 };
 
 
@@ -371,12 +381,14 @@ const updateExams = (req , res) => {
     
 }
 const answerQuestion = async (req, res) => {    
-    const { question_id, answer: option_answer, user_id } = req.fields;
+    const { question_id, answer: option_answer, user_id , essay} = req.fields;
     
-    // Validasi input
-    if (!question_id || !option_answer || !user_id) {
+    console.log(essay);
+    if (!question_id || !user_id) {
         return res.status(400).json({ message: "question_id, answer, and user_id are required." });
     }
+    
+ 
 
     try {          
         await db.query(
@@ -384,10 +396,10 @@ const answerQuestion = async (req, res) => {
             [user_id, question_id]
         );
 
-        // Masukkan data baru ke tabel options_user
+        
         await db.query(
-            "INSERT INTO options_user (question_id, option_id, user_id) VALUES (?, ?, ?)",
-            [question_id, option_answer, user_id]
+            "INSERT INTO options_user (question_id, option_id, user_id , text) VALUES (?, ?, ? , ?)",
+            [question_id, option_answer, user_id , essay]
         );
         res.status(200).json({ message: "Answer updated successfully." });
 
