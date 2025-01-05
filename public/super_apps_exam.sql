@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: Dec 31, 2024 at 09:48 AM
+-- Host: localhost
+-- Generation Time: Jan 05, 2025 at 05:45 PM
 -- Server version: 8.0.30
--- PHP Version: 8.3.7
+-- PHP Version: 8.3.8
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -29,7 +29,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `access_user` (
   `id` int NOT NULL,
-  `token` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `start_date` date NOT NULL,
   `expired_at` date NOT NULL,
   `user_id` int NOT NULL,
@@ -45,8 +45,8 @@ CREATE TABLE `access_user` (
 
 INSERT INTO `access_user` (`id`, `token`, `start_date`, `expired_at`, `user_id`, `limit_exam`, `limit_user`, `created_at`, `updated_at`) VALUES
 (1, 'qweqwqAddeSFdesf', '2024-12-10', '2024-12-16', 1, 10, 100, '2024-12-10 07:45:20', '2024-12-10 07:45:20'),
-(2, 'fdsfhsudhfdskfniu', '2024-12-16', '2024-12-31', 1, 10, 100, '2024-12-17 02:36:28', '2024-12-17 02:36:26'),
-(3, 'fdsfhsudhfdskfniu', '2024-12-24', '2024-12-31', 4, 10, 100, '2024-12-24 09:01:54', '2024-12-24 09:01:51');
+(2, 'fdsfhsudhfdskfniu', '2024-12-16', '2025-12-31', 1, 10, 100, '2024-12-17 02:36:28', '2024-12-17 02:36:26'),
+(3, 'fdsfhsudhfdskfniu', '2024-12-24', '2025-12-31', 4, 10, 100, '2024-12-24 09:01:54', '2024-12-24 09:01:51');
 
 -- --------------------------------------------------------
 
@@ -55,8 +55,8 @@ INSERT INTO `access_user` (`id`, `token`, `start_date`, `expired_at`, `user_id`,
 --
 
 CREATE TABLE `cache` (
-  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `expiration` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -67,8 +67,8 @@ CREATE TABLE `cache` (
 --
 
 CREATE TABLE `cache_locks` (
-  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `owner` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `owner` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `expiration` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -95,8 +95,8 @@ CREATE TABLE `exams` (
 --
 
 INSERT INTO `exams` (`id`, `name`, `start_date`, `end_date`, `user_id`, `grouping_list_ids`, `except_user_ids`, `created_at`, `updated_at`) VALUES
-(1, 'UJIAN NASIONAL 2024', '2024-12-18 21:00:00', '2024-12-31 17:00:00', 1, '1,2', '2', NULL, NULL),
-(2, 'TRY OUT 2023', '2024-12-16 08:00:00', '2024-12-16 12:00:00', 1, '1', '2,3', NULL, NULL);
+(1, 'UJIAN NASIONAL 2024', '2024-12-18 21:00:00', '2025-12-31 17:00:00', 1, '1,2', '2', NULL, NULL),
+(2, 'TRY OUT 2023', '2024-12-16 08:00:00', '2025-12-16 12:00:00', 1, '1', '2,3', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -106,11 +106,11 @@ INSERT INTO `exams` (`id`, `name`, `start_date`, `end_date`, `user_id`, `groupin
 
 CREATE TABLE `failed_jobs` (
   `id` bigint UNSIGNED NOT NULL,
-  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `uuid` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `connection` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `exception` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -147,8 +147,8 @@ INSERT INTO `groupings` (`id`, `name`, `level`, `user_id`, `created_at`, `update
 
 CREATE TABLE `jobs` (
   `id` bigint UNSIGNED NOT NULL,
-  `queue` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `attempts` tinyint UNSIGNED NOT NULL,
   `reserved_at` int UNSIGNED DEFAULT NULL,
   `available_at` int UNSIGNED NOT NULL,
@@ -162,13 +162,13 @@ CREATE TABLE `jobs` (
 --
 
 CREATE TABLE `job_batches` (
-  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `total_jobs` int NOT NULL,
   `pending_jobs` int NOT NULL,
   `failed_jobs` int NOT NULL,
-  `failed_job_ids` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `options` mediumtext COLLATE utf8mb4_unicode_ci,
+  `failed_job_ids` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `options` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `cancelled_at` int DEFAULT NULL,
   `created_at` int NOT NULL,
   `finished_at` int DEFAULT NULL
@@ -182,7 +182,7 @@ CREATE TABLE `job_batches` (
 
 CREATE TABLE `migrations` (
   `id` int UNSIGNED NOT NULL,
-  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `migration` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -204,7 +204,7 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 CREATE TABLE `options` (
   `id` int NOT NULL,
   `text` text,
-  `parent_match` text,
+  `match_text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   `is_true` int DEFAULT NULL,
   `question_id` int DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -215,13 +215,15 @@ CREATE TABLE `options` (
 -- Dumping data for table `options`
 --
 
-INSERT INTO `options` (`id`, `text`, `parent_match`, `is_true`, `question_id`, `created_at`, `updated_at`) VALUES
+INSERT INTO `options` (`id`, `text`, `match_text`, `is_true`, `question_id`, `created_at`, `updated_at`) VALUES
 (1, 'Reynaldi', NULL, 1, 1, '2024-12-23 07:56:00', '2024-12-23 07:56:20'),
 (2, 'Akbar', NULL, 0, 1, '2024-12-23 07:56:08', '2024-12-23 07:56:20'),
 (3, 'Yasril', NULL, 0, 1, '2024-12-23 07:56:12', '2024-12-23 07:56:20'),
 (4, 'Facebook', NULL, 1, 2, '2024-12-23 07:56:37', NULL),
 (5, 'Whatsapp', NULL, 1, 2, '2024-12-23 07:56:45', NULL),
-(6, 'Kuda', NULL, 0, 2, '2024-12-23 07:56:48', NULL);
+(6, 'Kuda', NULL, 0, 2, '2024-12-23 07:56:48', NULL),
+(7, 'Indonesia', 'Jakarta', 1, 6, '2025-01-04 17:40:19', NULL),
+(8, 'Malaysia', 'Kuala Lumpur', 1, 6, '2025-01-04 17:40:30', NULL);
 
 -- --------------------------------------------------------
 
@@ -244,9 +246,10 @@ CREATE TABLE `options_user` (
 --
 
 INSERT INTO `options_user` (`id`, `question_id`, `user_id`, `option_id`, `text`, `created_at`, `updated_at`) VALUES
-(1, 1, 3, '1', NULL, '2024-12-23 08:16:16', '2024-12-31 08:46:51'),
-(4, 3, 3, NULL, 'Hallo', '2024-12-23 08:42:18', NULL),
-(5, 2, 3, '4,5', NULL, '2024-12-31 08:46:56', NULL);
+(18, 4, 3, '', 'fdsfdsfhu', '2025-01-05 04:40:08', NULL),
+(19, 3, 3, '', 'tssuasdnkn', '2025-01-05 04:40:59', NULL),
+(38, 1, 3, '3', '', '2025-01-05 17:35:02', NULL),
+(42, 2, 3, '4,5,6', '', '2025-01-05 17:44:17', NULL);
 
 -- --------------------------------------------------------
 
@@ -255,8 +258,8 @@ INSERT INTO `options_user` (`id`, `question_id`, `user_id`, `option_id`, `text`,
 --
 
 CREATE TABLE `password_reset_tokens` (
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -285,7 +288,8 @@ INSERT INTO `questions` (`id`, `question`, `type`, `question_bank_id`, `number_o
 (2, 'Sebutkan App ?', 'complex', 1, 2, '2024-12-19 04:17:26', NULL),
 (3, 'berikan penjelasan', 'essay', 1, 3, '2024-12-19 04:17:45', NULL),
 (4, 'berikan penjelasan', 'essay', 1, 4, '2024-12-19 04:17:45', '2024-12-19 08:44:36'),
-(5, 'berikan penjelasan', 'essay', 2, 1, '2024-12-19 04:17:45', '2024-12-19 08:44:36');
+(5, 'berikan penjelasan', 'essay', 2, 1, '2024-12-19 04:17:45', '2024-12-19 08:44:36'),
+(6, 'jodohkan', 'match', 1, 5, '2025-01-04 17:39:52', NULL);
 
 -- --------------------------------------------------------
 
@@ -322,11 +326,11 @@ INSERT INTO `question_banks` (`id`, `name`, `is_active`, `user_id`, `multiple_tr
 --
 
 CREATE TABLE `sessions` (
-  `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` bigint UNSIGNED DEFAULT NULL,
-  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `user_agent` text COLLATE utf8mb4_unicode_ci,
-  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ip_address` varchar(45) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_agent` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `last_activity` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -346,11 +350,11 @@ INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, 
 CREATE TABLE `users` (
   `id` bigint UNSIGNED NOT NULL,
   `username` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `role` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `role` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `parent_id` bigint DEFAULT NULL,
-  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `token_app` text COLLATE utf8mb4_unicode_ci,
+  `remember_token` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `token_app` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `grouping_id` int DEFAULT NULL,
   `is_active` int DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -515,19 +519,19 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT for table `options`
 --
 ALTER TABLE `options`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `options_user`
 --
 ALTER TABLE `options_user`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT for table `questions`
 --
 ALTER TABLE `questions`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `question_banks`
