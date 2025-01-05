@@ -388,25 +388,32 @@ const answerQuestion = async (req, res) => {
         return res.status(400).json({ message: "question_id, answer, and user_id are required." });
     }
     
- 
+    const check = await queryAsync(`select option_id, text from options_user where user_id = ? and question_id = ?`, [user_id , question_id]);
 
-    try {          
-        await db.query(
-            "DELETE FROM options_user WHERE user_id = ? AND question_id = ?",
-            [user_id, question_id]
-        );
+    console.log();
 
-        
-        await db.query(
-            "INSERT INTO options_user (question_id, option_id, user_id , text) VALUES (?, ?, ? , ?)",
-            [question_id, option_answer, user_id , essay]
-        );
-        res.status(200).json({ message: "Answer updated successfully." });
-
-    } catch (error) {
-        console.error("Error updating answer:", error);
-        res.status(500).json({ message: "Internal server error." });
+    if(check[0].option_id != option_answer || check[0].text != essay){
+        try {          
+            await db.query(
+                "DELETE FROM options_user WHERE user_id = ? AND question_id = ?",
+                [user_id, question_id]
+            );
+    
+            
+            await db.query(
+                "INSERT INTO options_user (question_id, option_id, user_id , text) VALUES (?, ?, ? , ?)",
+                [question_id, option_answer, user_id , essay]
+            );
+            res.status(200).json({ message: "Answer updated successfully." });
+    
+        } catch (error) {
+            console.error("Error updating answer:", error);
+            res.status(500).json({ message: "Internal server error." });
+        }
+    }else{
+        res.status(200).json({ message: "Tidak ada perubahan" });
     }
+    
 };
 
 module.exports = { getExams , getDashboard ,getGrouping , getUsers , getBankQuestion , getDataExamUser , getQuestionUser , numberOfPage , answerQuestion };
