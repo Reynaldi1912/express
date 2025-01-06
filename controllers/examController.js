@@ -275,10 +275,33 @@ async function getQuestionUser(req, res) {
 
         let match_question = null;
         let option_second = null;
+        let data_answer = {};
         
         if(type == 'match'){
-            const queryMatchQuestion = `SELECT id, text AS 'question' FROM options WHERE question_id = ? `
+            const queryMatchQuestion = `SELECT id, text AS 'question' FROM options WHERE question_id = ? `;
             const queryOptionSecond = `SELECT id, match_text AS 'option' FROM options WHERE question_id = ? `;
+
+            const first_query = `SELECT id FROM options WHERE question_id = ?`;
+            const answer_query = `SELECT option_id FROM options_user WHERE question_id = ?`;
+            
+            // Ambil data first_option dan answer_user
+            const first_option = await queryAsync(first_query, [id]);
+            const answer_user = await queryAsync(answer_query, [id]);
+            
+            // Ambil string jawaban pengguna (misalnya "6,null,7")
+            const userAnswers = answer_user.length > 0 ? answer_user[0].option_id.split(',') : [];
+            
+            // Buat data_answer dengan memetakan key dari first_option dan value dari userAnswers
+            first_option.forEach((option, index) => {
+                data_answer[option.id] = userAnswers[index] !== 'null' && userAnswers[index] !== undefined   && userAnswers[index] !== NaN
+                    ? parseInt(userAnswers[index], 10) 
+                    : null;
+            });
+
+            console.log(data_answer);
+            
+                        
+
             match_question = await queryAsync(queryMatchQuestion, [id ]);
             option_second = await queryAsync(queryOptionSecond, [id]);            
         }
@@ -299,10 +322,7 @@ async function getQuestionUser(req, res) {
             
 
             
-            // Mendapatkan jawaban pengguna
             db.query(queryOptionUser, [id, req.query.user_id], (err, userAnswerResults) => {
-                console.log(userAnswerResults);
-                
                 if (err) {
                     return res.status(500).json({
                         message: 'Internal Server Error (User Answer): ' + err,
@@ -313,7 +333,7 @@ async function getQuestionUser(req, res) {
                 
                 let answer = null;
                 if(userAnswerResults.length > 0){
-                    if (userAnswerResults[0].option_id != '' && userAnswerResults[0].option_id != null) {      
+                    if (userAnswerResults[0].option_id != '' && userAnswerResults[0].option_id != null) {
                         answer = userAnswerResults[0].option_id
                         .split(',')
                         .map((id) => ({ option_id: Number(id) }));
@@ -322,6 +342,8 @@ async function getQuestionUser(req, res) {
                     }
                 }
 
+                console.log(data_answer);
+                
                 
                 res.json({
                     id: id,
@@ -330,6 +352,7 @@ async function getQuestionUser(req, res) {
                     answer: answer,
                     match_question: match_question,
                     option_second : option_second,
+                    match_answer : data_answer,
                     type : type
                 });
             });
@@ -343,15 +366,26 @@ async function getQuestionUser(req, res) {
 
 
 
-const numberOfPage = (req,res) => {
+const numberOfPage = async (req,res) => {
     const id = req.query.id;
-    const query = `SELECT 
-                        number_of, type
-                    FROM questions AS q where question_bank_id = ?
-                    `; 
-
+    const user_id = req.query.user_id;
+    console.log("id" , id);
+    console.log("user_id" , user_id);
     
-    db.query(query , [id], (err, results) => {
+    const query = `select 
+                        q.id , 
+                        number_of , 
+                        type,
+                       	case 
+                            when ou.is_doubt = 1 then -1
+                            when (ou.option_id is not null and ou.text is not null) then 1 
+                            else 0 
+                        end as status 
+                    from options_user ou right join questions as q on ou.question_id= q.id AND ou.user_id = ?
+                    where q.question_bank_id = ?
+                    `;
+
+        db.query(query , [user_id ,id], (err, results) => {
         if (err) {
             return res.status(500).json({ 
                     message: 'Internal Server Error ' + err , 
@@ -382,27 +416,43 @@ const updateExams = (req , res) => {
     
 }
 const answerQuestion = async (req, res) => {    
-    const { question_id, answer: option_answer, user_id , essay} = req.fields;
-    
-    console.log(essay);
+    const { 
+        question_id, 
+        answer: option_answer = null,
+        user_id, 
+        essay = null,
+        doubt,
+    } = req.fields;
+        
     if (!question_id || !user_id) {
         return res.status(400).json({ message: "question_id, answer, and user_id are required." });
     }
+        
+    if ((!option_answer || option_answer === '') && (!essay || essay === '')) {
+        return res.status(200).json({ message: "Tidak ada yang disimpan." });
+    }
     
     const check = await queryAsync(`select option_id, text from options_user where user_id = ? and question_id = ?`, [user_id , question_id]);
-
+    
+    
+    
     if(check.length > 0){
+        console.log('doubt' , doubt);
         if(check[0].option_id != option_answer || check[0].text != essay){
             try {          
                 await db.query(
                     "DELETE FROM options_user WHERE user_id = ? AND question_id = ?",
                     [user_id, question_id]
                 );
-        
                 
                 await db.query(
                     "INSERT INTO options_user (question_id, option_id, user_id , text) VALUES (?, ?, ? , ?)",
-                    [question_id, option_answer, user_id , essay]
+                    [question_id, option_answer, user_id , essay ]
+                );
+
+                await db.query(
+                    "UPDATE options_user SET is_doubt = ? WHERE user_id = ? AND question_id = ?",
+                    [doubt, user_id, question_id ]
                 );
                 res.status(200).json({ message: "Answer updated successfully." });
         
@@ -411,12 +461,21 @@ const answerQuestion = async (req, res) => {
                 res.status(500).json({ message: "Internal server error." });
             }
         }else{
+            await db.query(
+                "UPDATE options_user SET is_doubt = ? WHERE user_id = ? AND question_id = ?",
+                [doubt, user_id, question_id]
+            );
             res.status(200).json({ message: "Tidak ada perubahan" });
         }
     }else{
         await db.query(
             "INSERT INTO options_user (question_id, option_id, user_id , text) VALUES (?, ?, ? , ?)",
             [question_id, option_answer, user_id , essay]
+        );
+
+        await db.query(
+            "UPDATE options_user SET is_doubt = ? WHERE user_id = ? AND question_id = ?",
+            [doubt, user_id, question_id]
         );
         res.status(200).json({ message: "Answer updated successfully." });
     }
