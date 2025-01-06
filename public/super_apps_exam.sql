@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Jan 05, 2025 at 05:45 PM
+-- Host: localhost:3306
+-- Generation Time: Jan 06, 2025 at 09:49 AM
 -- Server version: 8.0.30
--- PHP Version: 8.3.8
+-- PHP Version: 8.3.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -223,7 +223,8 @@ INSERT INTO `options` (`id`, `text`, `match_text`, `is_true`, `question_id`, `cr
 (5, 'Whatsapp', NULL, 1, 2, '2024-12-23 07:56:45', NULL),
 (6, 'Kuda', NULL, 0, 2, '2024-12-23 07:56:48', NULL),
 (7, 'Indonesia', 'Jakarta', 1, 6, '2025-01-04 17:40:19', NULL),
-(8, 'Malaysia', 'Kuala Lumpur', 1, 6, '2025-01-04 17:40:30', NULL);
+(8, 'Malaysia', 'Kuala Lumpur', 1, 6, '2025-01-04 17:40:30', NULL),
+(9, 'Jepang', 'Tokyo', 1, 6, '2025-01-06 09:32:35', NULL);
 
 -- --------------------------------------------------------
 
@@ -248,8 +249,9 @@ CREATE TABLE `options_user` (
 INSERT INTO `options_user` (`id`, `question_id`, `user_id`, `option_id`, `text`, `created_at`, `updated_at`) VALUES
 (18, 4, 3, '', 'fdsfdsfhu', '2025-01-05 04:40:08', NULL),
 (19, 3, 3, '', 'tssuasdnkn', '2025-01-05 04:40:59', NULL),
-(38, 1, 3, '3', '', '2025-01-05 17:35:02', NULL),
-(42, 2, 3, '4,5,6', '', '2025-01-05 17:44:17', NULL);
+(42, 2, 3, '4,5,6', '', '2025-01-05 17:44:17', NULL),
+(43, 1, 3, '1', '', '2025-01-06 07:28:10', NULL),
+(47, 6, 3, '7,null,9', '', '2025-01-06 09:34:23', NULL);
 
 -- --------------------------------------------------------
 
@@ -519,13 +521,13 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT for table `options`
 --
 ALTER TABLE `options`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `options_user`
 --
 ALTER TABLE `options_user`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- AUTO_INCREMENT for table `questions`
