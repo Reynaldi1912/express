@@ -268,7 +268,7 @@ async function getQuestionUser(req, res) {
     if (questionResults.length > 0) {
         const id = questionResults[0].id; // ID dari soal
         const question = questionResults[0].question; // Teks soal
-        const type = await queryAsync('SELECT type FROM questions WHERE id = ?', [id]);
+        const type = questionResults[0].type;
 
         const queryOption = `SELECT id, text FROM options WHERE question_id = ?`;
         const queryOptionUser = `SELECT option_id, text FROM options_user WHERE question_id = ? AND user_id = ?`;
@@ -276,11 +276,11 @@ async function getQuestionUser(req, res) {
         let match_question = null;
         let option_second = null;
         
-        if(type[0].type == 'match'){
-            const queryMatchQuestion = `SELECT id, text FROM options WHERE question_id = ? `
-            const queryOptionSecond = `SELECT id, match_text FROM options WHERE question_id = ? `;
+        if(type == 'match'){
+            const queryMatchQuestion = `SELECT id, text AS 'question' FROM options WHERE question_id = ? `
+            const queryOptionSecond = `SELECT id, match_text AS 'option' FROM options WHERE question_id = ? `;
             match_question = await queryAsync(queryMatchQuestion, [id ]);
-            option_second = await queryAsync(queryOptionSecond, [id]);
+            option_second = await queryAsync(queryOptionSecond, [id]);            
         }
 
 
@@ -329,7 +329,8 @@ async function getQuestionUser(req, res) {
                     options: options,
                     answer: answer,
                     match_question: match_question,
-                    option_second : option_second
+                    option_second : option_second,
+                    type : type
                 });
             });
         });
@@ -390,28 +391,34 @@ const answerQuestion = async (req, res) => {
     
     const check = await queryAsync(`select option_id, text from options_user where user_id = ? and question_id = ?`, [user_id , question_id]);
 
-    console.log();
-
-    if(check[0].option_id != option_answer || check[0].text != essay){
-        try {          
-            await db.query(
-                "DELETE FROM options_user WHERE user_id = ? AND question_id = ?",
-                [user_id, question_id]
-            );
-    
-            
-            await db.query(
-                "INSERT INTO options_user (question_id, option_id, user_id , text) VALUES (?, ?, ? , ?)",
-                [question_id, option_answer, user_id , essay]
-            );
-            res.status(200).json({ message: "Answer updated successfully." });
-    
-        } catch (error) {
-            console.error("Error updating answer:", error);
-            res.status(500).json({ message: "Internal server error." });
+    if(check.length > 0){
+        if(check[0].option_id != option_answer || check[0].text != essay){
+            try {          
+                await db.query(
+                    "DELETE FROM options_user WHERE user_id = ? AND question_id = ?",
+                    [user_id, question_id]
+                );
+        
+                
+                await db.query(
+                    "INSERT INTO options_user (question_id, option_id, user_id , text) VALUES (?, ?, ? , ?)",
+                    [question_id, option_answer, user_id , essay]
+                );
+                res.status(200).json({ message: "Answer updated successfully." });
+        
+            } catch (error) {
+                console.error("Error updating answer:", error);
+                res.status(500).json({ message: "Internal server error." });
+            }
+        }else{
+            res.status(200).json({ message: "Tidak ada perubahan" });
         }
     }else{
-        res.status(200).json({ message: "Tidak ada perubahan" });
+        await db.query(
+            "INSERT INTO options_user (question_id, option_id, user_id , text) VALUES (?, ?, ? , ?)",
+            [question_id, option_answer, user_id , essay]
+        );
+        res.status(200).json({ message: "Answer updated successfully." });
     }
     
 };
