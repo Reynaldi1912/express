@@ -23,5 +23,6 @@ router.get('/users-master', userController.getDataUserMaster);
 router.post('/login', authController.login_POST);
 router.post('/updateToken' , authController.updateToken);
 router.post('/save-answer' , examController.answerQuestion);
+router.post('/finish' , examController.finishExam);
 
 module.exports = router;

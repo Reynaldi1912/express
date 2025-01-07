@@ -205,6 +205,8 @@ const getBankQuestion = (req , res) => {
 const getDataExamUser = (req , res) => {
     user_id = req.header('userId')
 
+    console.log(user_id);
+    
     query = `SELECT 
                     e.id,
                     e.name,
@@ -222,7 +224,7 @@ const getDataExamUser = (req , res) => {
                 exams AS e LEFT JOIN groupings AS g ON FIND_IN_SET(g.id, e.grouping_list_ids)
                     LEFT JOIN users AS u ON g.id = u.grouping_id
             WHERE TRUE AND e.user_id = (select parent_id from users where id = ?)
-            AND NOT FIND_IN_SET(?, e.except_user_ids)
+            AND NOT FIND_IN_SET(3, COALESCE(e.except_user_ids,0))
             AND FIND_IN_SET(u.grouping_id, e.grouping_list_ids)
             GROUP BY 
                 e.id
@@ -276,6 +278,7 @@ async function getQuestionUser(req, res) {
         let match_question = null;
         let option_second = null;
         let data_answer = {};
+        const total_page = await queryAsync(`SELECT COUNT(*) AS total FROM questions WHERE question_bank_id = 1`, [id]);
         
         if(type == 'match'){
             const queryMatchQuestion = `SELECT id, text AS 'question' FROM options WHERE question_id = ? `;
@@ -286,6 +289,7 @@ async function getQuestionUser(req, res) {
             
             // Ambil data first_option dan answer_user
             const first_option = await queryAsync(first_query, [id]);
+            
             const answer_user = await queryAsync(answer_query, [id]);
             
             // Ambil string jawaban pengguna (misalnya "6,null,7")
@@ -296,10 +300,7 @@ async function getQuestionUser(req, res) {
                 data_answer[option.id] = userAnswers[index] !== 'null' && userAnswers[index] !== undefined   && userAnswers[index] !== NaN
                     ? parseInt(userAnswers[index], 10) 
                     : null;
-            });
-
-            console.log(data_answer);
-            
+            });            
                         
 
             match_question = await queryAsync(queryMatchQuestion, [id ]);
@@ -353,7 +354,8 @@ async function getQuestionUser(req, res) {
                     match_question: match_question,
                     option_second : option_second,
                     match_answer : data_answer,
-                    type : type
+                    type : type,
+                    total_page : total_page[0]['total']
                 });
             });
         });
@@ -479,7 +481,14 @@ const answerQuestion = async (req, res) => {
         );
         res.status(200).json({ message: "Answer updated successfully." });
     }
-    
 };
 
-module.exports = { getExams , getDashboard ,getGrouping , getUsers , getBankQuestion , getDataExamUser , getQuestionUser , numberOfPage , answerQuestion };
+async function finishExam(req , res){
+    exam_id = req.fields.exam_id;
+    user_id = req.fields.user_id;
+
+    await queryAsync(`UPDATE status_user SET is_finish = 1 WHERE user_id = ? AND exam_id = ?`, [user_id , exam_id]);
+    res.status(200).json({ message: "Finish" });
+}
+
+module.exports = { getExams , getDashboard ,getGrouping , getUsers , getBankQuestion , getDataExamUser , getQuestionUser , numberOfPage , answerQuestion, finishExam };
