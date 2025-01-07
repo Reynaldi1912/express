@@ -3,6 +3,7 @@ const router = express.Router();
 const examController = require('../controllers/examController');
 const authController = require('../controllers/authController');
 const userController = require('../controllers/userController');
+const masterController = require('../controllers/masterController');
 const authenticateToken = require('../middleware/auth');
 
 // Lindungi rute dengan middleware autentikasi
@@ -24,5 +25,13 @@ router.post('/login', authController.login_POST);
 router.post('/updateToken' , authController.updateToken);
 router.post('/save-answer' , examController.answerQuestion);
 router.post('/finish' , examController.finishExam);
+
+router.post('/insert-user' , masterController.insertUser);
+router.post('/update-user' , masterController.updateUser);
+router.post('/delete-user' , masterController.deleteUser);
+
+router.post('/delete-grouping' , masterController.deleteGrouping);
+router.post('/update-grouping' , masterController.updateGrouping);
+router.post('/insert-grouping' , masterController.insertGrouping);
 
 module.exports = router;

@@ -5,9 +5,9 @@ async function queryAsync(query, params) {
     return new Promise((resolve, reject) => {
         db.query(query, params, (err, results) => {
             if (err) {
-                reject(err);  // Menolak promise jika ada error
+                reject(err);
             } else {
-                resolve(results);  // Menyelesaikan promise dengan hasil query
+                resolve(results); 
             }
         });
     });
