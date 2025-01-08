@@ -34,4 +34,6 @@ router.post('/delete-grouping' , masterController.deleteGrouping);
 router.post('/update-grouping' , masterController.updateGrouping);
 router.post('/insert-grouping' , masterController.insertGrouping);
 
+router.post('/post-question-bank' , masterController.postQuestionBank);
+
 module.exports = router;

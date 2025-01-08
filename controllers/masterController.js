@@ -184,6 +184,69 @@ async function getGroupings(req, res) {
     }
 }
 
+async function postQuestionBank(req, res) {
+    const {
+      name,
+      description,
+      multiple_correct_points,
+      multiple_wrong_points,
+      complex_correct_points,
+      complex_wrong_points,
+      match_correct_points,
+      match_wrong_points,
+      user_id
+    } = req.fields;
+  
+    
+    try {
+      const query = `
+        INSERT INTO question_banks (
+          name, 
+          is_active, 
+          user_id, 
+          multiple_true_poin, 
+          multiple_false_poin, 
+          complex_true_poin, 
+          complex_false_poin, 
+          match_true_poin, 
+          match_false_poin
+        ) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+      
+  
+      const params = [
+        name,
+        1,
+        user_id,
+        multiple_correct_points,
+        multiple_wrong_points,
+        complex_correct_points,
+        complex_wrong_points,
+        match_correct_points,
+        match_wrong_points
+      ];
+  
+      // Eksekusi query
+      await db.query(query, params);
+  
+      // Berikan respons sukses
+      res.status(201).json({ message: 'Question Bank successfully created.' });
+  
+    } catch (error) {
+      // Log error ke konsol
+      console.error('Error inserting data into question_banks:', error);
+  
+      // Berikan respons error
+      res.status(500).json({
+        error: 'Failed to create Question Bank. Please try again.',
+        details: error.message // Detail error untuk debugging
+      });
+    }
+  }
+  
 
 
-module.exports = { insertUser , deleteUser , updateUser , insertGrouping, deleteGrouping, updateGrouping, getGroupings };
+
+
+module.exports = { insertUser , deleteUser , updateUser , insertGrouping, deleteGrouping, updateGrouping, postQuestionBank };
