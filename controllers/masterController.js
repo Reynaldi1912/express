@@ -185,21 +185,56 @@ async function getGroupings(req, res) {
 }
 
 async function postQuestionBank(req, res) {
-    const {
-      name,
-      description,
-      multiple_correct_points,
-      multiple_wrong_points,
-      complex_correct_points,
-      complex_wrong_points,
-      match_correct_points,
-      match_wrong_points,
-      user_id
-    } = req.fields;
-  
-    
-    try {
-      const query = `
+  const {
+    id,
+    name,
+    description,
+    multiple_correct_points,
+    multiple_wrong_points,
+    complex_correct_points,
+    complex_wrong_points,
+    match_correct_points,
+    match_wrong_points,
+    user_id,
+  } = req.fields;
+
+  try {
+    if (id) {
+      // Jika ID tidak null, lakukan update
+      const updateQuery = `
+        UPDATE question_banks
+        SET 
+          name = ?, 
+          is_active = ?, 
+          user_id = ?, 
+          multiple_true_poin = ?, 
+          multiple_false_poin = ?, 
+          complex_true_poin = ?, 
+          complex_false_poin = ?, 
+          match_true_poin = ?, 
+          match_false_poin = ?
+        WHERE id = ?
+      `;
+      const updateParams = [
+        name,
+        1, // is_active
+        user_id,
+        multiple_correct_points,
+        multiple_wrong_points,
+        complex_correct_points,
+        complex_wrong_points,
+        match_correct_points,
+        match_wrong_points,
+        id, // ID untuk kondisi WHERE
+      ];
+
+      await db.query(updateQuery, updateParams);
+
+      // Berikan respons sukses untuk update
+      return res.status(200).json({ message: 'Question Bank successfully updated.' });
+    } else {
+      // Jika ID null, lakukan insert
+      const insertQuery = `
         INSERT INTO question_banks (
           name, 
           is_active, 
@@ -213,37 +248,36 @@ async function postQuestionBank(req, res) {
         ) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
-      
-  
-      const params = [
+
+      const insertParams = [
         name,
-        1,
+        1, // is_active
         user_id,
         multiple_correct_points,
         multiple_wrong_points,
         complex_correct_points,
         complex_wrong_points,
         match_correct_points,
-        match_wrong_points
+        match_wrong_points,
       ];
-  
-      // Eksekusi query
-      await db.query(query, params);
-  
-      // Berikan respons sukses
-      res.status(201).json({ message: 'Question Bank successfully created.' });
-  
-    } catch (error) {
-      // Log error ke konsol
-      console.error('Error inserting data into question_banks:', error);
-  
-      // Berikan respons error
-      res.status(500).json({
-        error: 'Failed to create Question Bank. Please try again.',
-        details: error.message // Detail error untuk debugging
-      });
+
+      await db.query(insertQuery, insertParams);
+
+      // Berikan respons sukses untuk insert
+      return res.status(201).json({ message: 'Question Bank successfully created.' });
     }
+  } catch (error) {
+    // Log error ke konsol
+    console.error('Error in Question Bank operation:', error);
+
+    // Berikan respons error
+    res.status(500).json({
+      error: 'Failed to process Question Bank operation. Please try again.',
+      details: error.message, // Detail error untuk debugging
+    });
   }
+
+}
   
 
 

@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: Jan 06, 2025 at 04:28 PM
+-- Host: localhost:3306
+-- Generation Time: Jan 10, 2025 at 09:17 AM
 -- Server version: 8.0.30
--- PHP Version: 8.3.8
+-- PHP Version: 8.3.7
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -95,7 +95,7 @@ CREATE TABLE `exams` (
 --
 
 INSERT INTO `exams` (`id`, `name`, `start_date`, `end_date`, `user_id`, `grouping_list_ids`, `except_user_ids`, `created_at`, `updated_at`) VALUES
-(1, 'UJIAN NASIONAL 2024', '2024-12-18 21:00:00', '2025-12-31 17:00:00', 1, '1,2', '2', NULL, NULL),
+(1, 'UJIAN NASIONAL 2024', '2024-12-18 21:00:00', '2025-12-31 17:00:00', 1, '1,2', NULL, NULL, NULL),
 (2, 'TRY OUT 2023', '2024-12-16 08:00:00', '2025-12-16 12:00:00', 1, '1', '2,3', NULL, NULL);
 
 -- --------------------------------------------------------
@@ -134,7 +134,7 @@ CREATE TABLE `groupings` (
 --
 
 INSERT INTO `groupings` (`id`, `name`, `level`, `user_id`, `created_at`, `updated_at`) VALUES
-(1, 'KELAS 7A', '7', 1, '2024-12-16 03:24:27', '2024-12-17 07:47:43'),
+(1, 'KELAS 7G', '7', 1, '2024-12-16 03:24:27', '2025-01-08 04:45:38'),
 (2, 'KELAS 7B', '7', 1, '2024-12-16 03:24:33', '2024-12-17 07:47:39'),
 (3, 'KELAS 7C', '7', 1, NULL, '2024-12-17 07:47:38'),
 (4, 'KELAS 7D', '7', 1, NULL, NULL);
@@ -240,15 +240,22 @@ CREATE TABLE `options_user` (
   `text` text,
   `is_doubt` int DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP
+  `updated_at` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `exam_id` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `options_user`
 --
 
-INSERT INTO `options_user` (`id`, `question_id`, `user_id`, `option_id`, `text`, `is_doubt`, `created_at`, `updated_at`) VALUES
-(97, 1, 3, '1', '', 1, '2025-01-06 16:28:21', '2025-01-06 16:28:24');
+INSERT INTO `options_user` (`id`, `question_id`, `user_id`, `option_id`, `text`, `is_doubt`, `created_at`, `updated_at`, `exam_id`) VALUES
+(97, 1, 3, '1', '', 0, '2025-01-06 16:28:21', '2025-01-07 09:31:56', NULL),
+(98, 2, 3, '5', '', 0, '2025-01-07 09:34:29', '2025-01-07 09:34:29', NULL),
+(99, 4, 3, '', 'test', 0, '2025-01-07 09:34:53', '2025-01-07 09:34:53', NULL),
+(100, 3, 3, '', 'halo', 0, '2025-01-07 09:36:09', '2025-01-07 09:36:09', NULL),
+(102, 2, 2, '6', '', 0, '2025-01-07 09:42:23', '2025-01-07 09:42:35', NULL),
+(103, 3, 2, '', 'halo', 0, '2025-01-07 09:42:27', '2025-01-07 09:42:27', NULL),
+(104, 1, 2, '2', '', 0, '2025-01-07 09:42:32', '2025-01-07 09:42:32', NULL);
 
 -- --------------------------------------------------------
 
@@ -317,7 +324,8 @@ CREATE TABLE `question_banks` (
 --
 
 INSERT INTO `question_banks` (`id`, `name`, `is_active`, `user_id`, `multiple_true_poin`, `complex_true_poin`, `match_true_poin`, `multiple_false_poin`, `complex_false_poin`, `match_false_poin`, `created_at`, `updated_at`) VALUES
-(1, 'Soal AKM UJIAN NASIONAL', 1, 1, 0, 0, 0, 0, 0, 0, '2024-12-18 04:19:56', '2024-12-18 06:23:24');
+(1, 'Soal AKM UJIAN NASIONAL', 1, 1, 0, 0, 0, 0, 0, 0, '2024-12-18 04:19:56', '2024-12-18 06:23:24'),
+(2, 'TEST 01', 1, 1, 1, 3, 5, 2, 4, 6, '2025-01-08 07:48:47', '2025-01-10 08:51:34');
 
 -- --------------------------------------------------------
 
@@ -340,6 +348,22 @@ CREATE TABLE `sessions` (
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
 ('MsHN4QWeCUWeoFedAqsriehA8vcnJMptwE4eAlAe', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36', 'YTo2OntzOjY6Il90b2tlbiI7czo0MDoieThaTGVObFBRbVUwa1R0M2d1THEwcjdGT0NPOXZuUnA5eHVuMlczMCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly9sb2NhbGhvc3Q6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6ODoidXNlcm5hbWUiO3M6ODoicmV5bmFsZGkiO3M6MjoiaWQiO3M6MToiMSI7czo1OiJ0b2tlbiI7czoxNjoicXdlcXdxQWRkZVNGZGVzZiI7fQ==', 1733823978);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `status_user`
+--
+
+CREATE TABLE `status_user` (
+  `id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `exam_id` int NOT NULL,
+  `total_attemp` int NOT NULL DEFAULT '0',
+  `is_finish` int NOT NULL DEFAULT '0',
+  `created_at` timestamp NOT NULL,
+  `updated_at` timestamp NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
@@ -470,6 +494,12 @@ ALTER TABLE `sessions`
   ADD KEY `sessions_last_activity_index` (`last_activity`);
 
 --
+-- Indexes for table `status_user`
+--
+ALTER TABLE `status_user`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -525,7 +555,7 @@ ALTER TABLE `options`
 -- AUTO_INCREMENT for table `options_user`
 --
 ALTER TABLE `options_user`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=98;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
 
 --
 -- AUTO_INCREMENT for table `questions`
@@ -537,7 +567,13 @@ ALTER TABLE `questions`
 -- AUTO_INCREMENT for table `question_banks`
 --
 ALTER TABLE `question_banks`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `status_user`
+--
+ALTER TABLE `status_user`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `users`
